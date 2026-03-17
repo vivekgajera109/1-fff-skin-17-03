@@ -52,7 +52,7 @@ class _MyAppState extends State<MyApp> {
       ],
       debugShowCheckedModeBanner: false,
       title: 'FFFF Skin Pro - Diamond Unlock',
-      theme: AppThemeV2.premiumDark,
+      theme: AppThemeV2.lightMinimal,
       builder: (context, child) {
         return GlobalWrapper(child: child!);
       },

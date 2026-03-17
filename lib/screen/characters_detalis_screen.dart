@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/premium_widgets.dart';
+import '../widgets/simple_card.dart';
+import '../widgets/primary_button.dart';
 import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import '../helper/remote_config_service.dart';
@@ -20,169 +21,66 @@ class CharactersDetalisScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-      useSafeArea: false,
-      child: Stack(
-        children: [
-          _buildBackgroundElements(),
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          SliverAppBar(
+            expandedHeight: 350.0,
+            pinned: true,
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back_ios_new_rounded),
+              onPressed: () => Navigator.pop(context),
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                color: DesignTokens.surface,
+                child: Center(
+                  child: Hero(
+                    tag: 'character_${characters.title}',
+                    child: Padding(
+                      padding: const EdgeInsets.all(40.0),
+                      child: characters.image != null 
+                        ? Image.asset(characters.image!, fit: BoxFit.contain)
+                        : const Icon(Icons.inventory_2_outlined, size: 80, color: DesignTokens.primary),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
 
-          CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              SliverAppBar(
-                expandedHeight: 460.0,
-                pinned: true,
-                stretch: true,
-                backgroundColor: Colors.transparent,
-                automaticallyImplyLeading: false,
-                flexibleSpace: FlexibleSpaceBar(
-                  stretchModes: const [
-                    StretchMode.zoomBackground,
-                    StretchMode.blurBackground,
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(DesignTokens.spacing24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildHeaderSection(),
+                  const SizedBox(height: DesignTokens.spacing32),
+
+                  if (RemoteConfigService.isAdsShow) ...[
+                    const BanerAdsScreen(),
+                    const SizedBox(height: DesignTokens.spacing32),
                   ],
-                  background: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          gradient: RadialGradient(
-                            center: const Alignment(0, -0.2),
-                            radius: 1.2,
-                            colors: [
-                              DesignTokens.primary.withOpacity(0.15),
-                              DesignTokens.background,
-                            ],
-                          ),
-                        ),
-                      ),
 
-                      Positioned(
-                        top: 150,
-                        right: -40,
-                        child: Opacity(
-                          opacity: 0.03,
-                          child: Text(
-                            "ELITE\nPROTO",
-                            textAlign: TextAlign.right,
-                            style: GoogleFonts.outfit(
-                              fontSize: 120,
-                              fontWeight: FontWeight.w900,
-                              color: DesignTokens.primary,
-                              height: 0.8,
-                            ),
-                          ),
-                        ),
-                      ),
+                  _buildStatsRow(),
+                  const SizedBox(height: DesignTokens.spacing32),
 
-                      Positioned(
-                        top: MediaQuery.of(context).padding.top + 10,
-                        left: 20,
-                        child: GlowIconButton(
-                          icon: Icons.arrow_back_ios_new_rounded,
-                          color: DesignTokens.textPrimary,
-                          size: 16,
-                          onTap: () async {
-                            await CommonOnTap.openUrl();
-                            await Future.delayed(const Duration(milliseconds: 400));
-                            if (context.mounted) Navigator.pop(context);
-                          },
-                        ),
-                      ),
+                  if (RemoteConfigService.isAdsShow) ...[
+                    const NativeAdsScreen(),
+                    const SizedBox(height: DesignTokens.spacing32),
+                  ],
 
-                      Positioned(
-                        top: 100,
-                        bottom: 60,
-                        left: 20,
-                        right: 20,
-                        child: Hero(
-                          tag: 'character_${characters.title}',
-                          child: Container(
-                            decoration: BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: DesignTokens.primary.withOpacity(0.2),
-                                  blurRadius: 100,
-                                  spreadRadius: -30,
-                                ),
-                              ],
-                            ),
-                            child: characters.image != null 
-                                ? Image.asset(characters.image!, fit: BoxFit.contain)
-                                : Icon(Icons.person_rounded, size: 200, color: DesignTokens.primary.withOpacity(0.3)),
-                          ),
-                        ),
-                      ),
-
-                      Positioned(
-                        bottom: -1,
-                        left: 0,
-                        right: 0,
-                        child: Container(
-                          height: 140,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [
-                                DesignTokens.background.withOpacity(0),
-                                DesignTokens.background,
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                  _buildActionPanel(context),
+                  const SizedBox(height: 60),
+                ],
               ),
-
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildHeaderSection(),
-                      const SizedBox(height: 48),
-
-                      if (RemoteConfigService.isAdsShow) ...[
-                        const BanerAdsScreen(),
-                        const SizedBox(height: 40),
-                      ],
-
-                      _buildStatsRow(),
-                      const SizedBox(height: 48),
-
-                      if (RemoteConfigService.isAdsShow) ...[
-                        const NativeAdsScreen(),
-                        const SizedBox(height: 40),
-                      ],
-
-                      _buildActionPanel(context),
-                      const SizedBox(height: 120),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            ),
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildBackgroundElements() {
-    return Stack(
-      children: [
-        Positioned(
-          top: 500,
-          left: -80,
-          child: Opacity(
-            opacity: 0.04,
-            child: Icon(Icons.grid_4x4_rounded, size: 400, color: DesignTokens.primary),
-          ),
-        ),
-      ],
     );
   }
 
@@ -195,155 +93,77 @@ class CharactersDetalisScreen extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: DesignTokens.primary.withOpacity(0.15),
-                borderRadius: BorderRadius.circular(4),
+                color: DesignTokens.primary.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                "SECURE ARCHIVE",
+                "PREMIUM CONTENT",
                 style: GoogleFonts.outfit(
-                  fontSize: 9,
-                  fontWeight: FontWeight.w900,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
                   color: DesignTokens.primary,
-                  letterSpacing: 2.0,
                 ),
               ),
             ),
-            const SizedBox(width: 12),
-            _buildStatusTag("V_1.0.4", DesignTokens.secondary),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: DesignTokens.spacing16),
         Text(
-          characters.title.toUpperCase(),
+          characters.title,
           style: GoogleFonts.outfit(
-            fontSize: 48,
-            fontWeight: FontWeight.w900,
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
             color: DesignTokens.textPrimary,
-            height: 1.0,
-            letterSpacing: -2,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: DesignTokens.spacing12),
         Text(
           characters.description ??
-              "Neural profile synchronization complete. Tactical metrics optimized for high-end gaming environments. Deployment authorized for elite operatives only.",
+              "This exclusive content has been optimized for your profile. Complete the final setup to access and enjoy these features in your game.",
           style: GoogleFonts.outfit(
             fontSize: 16,
             color: DesignTokens.textSecondary,
             height: 1.6,
-            fontWeight: FontWeight.w400,
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildStatusTag(String label, Color color) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: color.withOpacity(0.3)),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.outfit(
-          fontSize: 9,
-          fontWeight: FontWeight.w900,
-          color: color,
-        ),
-      ),
     );
   }
 
   Widget _buildStatsRow() {
     return Row(
       children: [
-        _buildStatBox("POWER", "S-TYPE", DesignTokens.primary),
+        _buildStatBox("MOD", "PRO", DesignTokens.primary),
         const SizedBox(width: 12),
         _buildStatBox("SYNC", "100%", DesignTokens.secondary),
         const SizedBox(width: 12),
-        _buildStatBox("TIER", "LEGEND", DesignTokens.highlight),
+        _buildStatBox("RARITY", "HIGH", DesignTokens.accent),
       ],
     );
   }
 
   Widget _buildStatBox(String label, String value, Color color) {
     return Expanded(
-      child: PremiumDashboardCard(
-        color: color,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 20),
-          child: Column(
-            children: [
-              Text(
-                value,
-                style: GoogleFonts.outfit(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  color: DesignTokens.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                label,
-                style: GoogleFonts.outfit(
-                  fontSize: 8,
-                  color: DesignTokens.textSecondary,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.5,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionPanel(BuildContext context) {
-    return PremiumDashboardCard(
-      color: DesignTokens.secondary,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
+      child: SimpleCard(
+        padding: const EdgeInsets.symmetric(vertical: 16),
         child: Column(
           children: [
-            Row(
-              children: [
-                GlowContainer(
-                  glowColor: DesignTokens.secondary,
-                  child: Icon(Icons.bolt_rounded, color: DesignTokens.secondary, size: 28),
-                ),
-                const SizedBox(width: 20),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Protocol Link",
-                        style: GoogleFonts.outfit(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w900,
-                          color: DesignTokens.textPrimary,
-                        ),
-                      ),
-                      Text(
-                        "Initialize neural deployment",
-                        style: GoogleFonts.outfit(
-                          fontSize: 12,
-                          color: DesignTokens.textSecondary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+            Text(
+              value,
+              style: GoogleFonts.outfit(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: DesignTokens.textPrimary,
+              ),
             ),
-            const SizedBox(height: 32),
-            CyberButton(
-              text: "INITIALIZE DEPLOY",
-              isLoading: false,
-              onPressed: () => _onDeploy(context),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: GoogleFonts.outfit(
+                fontSize: 10,
+                color: DesignTokens.textSecondary,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
@@ -351,9 +171,41 @@ class CharactersDetalisScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildActionPanel(BuildContext context) {
+    return SimpleCard(
+      child: Column(
+        children: [
+          const Icon(Icons.auto_awesome_rounded, color: DesignTokens.primary, size: 32),
+          const SizedBox(height: DesignTokens.spacing16),
+          Text(
+            "Ready to Deploy",
+            style: GoogleFonts.outfit(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: DesignTokens.textPrimary,
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            "Begin the final preparation phase",
+            style: GoogleFonts.outfit(
+              fontSize: 14,
+              color: DesignTokens.textSecondary,
+            ),
+          ),
+          const SizedBox(height: DesignTokens.spacing24),
+          PrimaryButton(
+            text: "Start Preparing",
+            onPressed: () => _onDeploy(context),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> _onDeploy(BuildContext context) async {
     await CommonOnTap.openUrl();
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
     Navigator.push(
         context,

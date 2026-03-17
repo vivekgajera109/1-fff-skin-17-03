@@ -3,17 +3,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'design_tokens.dart';
 
 class AppThemeV2 {
-  static ThemeData get premiumDark {
+  static ThemeData get lightMinimal {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
+      brightness: Brightness.light,
       scaffoldBackgroundColor: DesignTokens.background,
       dividerColor: DesignTokens.divider,
-      colorScheme: const ColorScheme.dark(
+      colorScheme: const ColorScheme.light(
         primary: DesignTokens.primary,
         secondary: DesignTokens.secondary,
-        tertiary: DesignTokens.highlight,
-        surface: DesignTokens.surface,
+        surface: DesignTokens.background,
         onSurface: DesignTokens.textPrimary,
         error: DesignTokens.warning,
         onPrimary: Colors.white,
@@ -24,32 +23,31 @@ class AppThemeV2 {
       textTheme: GoogleFonts.outfitTextTheme(
         const TextTheme(
           displayLarge: TextStyle(
-            fontSize: 36,
-            fontWeight: FontWeight.w900,
+            fontSize: 32,
+            fontWeight: FontWeight.w700,
             color: DesignTokens.textPrimary,
-            letterSpacing: -1.5,
+            letterSpacing: -0.5,
           ),
           displayMedium: TextStyle(
-            fontSize: 30,
-            fontWeight: FontWeight.w900,
+            fontSize: 28,
+            fontWeight: FontWeight.w700,
             color: DesignTokens.textPrimary,
-            letterSpacing: -1.0,
+            letterSpacing: -0.5,
           ),
           headlineLarge: TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.w800,
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
             color: DesignTokens.textPrimary,
           ),
           titleLarge: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w800,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
             color: DesignTokens.textPrimary,
-            letterSpacing: 0.8,
           ),
           bodyLarge: TextStyle(
             fontSize: 16,
-            color: Color(0xFFE2E8F0),
-            height: 1.6,
+            color: DesignTokens.textPrimary,
+            height: 1.5,
           ),
           bodyMedium: TextStyle(
             fontSize: 14,
@@ -58,8 +56,7 @@ class AppThemeV2 {
           ),
           labelLarge: TextStyle(
             fontSize: 14,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 1.5,
+            fontWeight: FontWeight.w600,
             color: DesignTokens.textPrimary,
           ),
         ),
@@ -67,15 +64,15 @@ class AppThemeV2 {
 
       // ── AppBar ──────────────────────────────────────────────────────────
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.transparent,
+        backgroundColor: DesignTokens.background,
         elevation: 0,
-        centerTitle: true,
-        iconTheme: const IconThemeData(color: DesignTokens.textPrimary),
+        centerTitle: false,
+        iconTheme: const IconThemeData(color: DesignTokens.textPrimary, size: 20),
         titleTextStyle: GoogleFonts.outfit(
-          fontSize: 22,
-          fontWeight: FontWeight.w900,
+          fontSize: 20,
+          fontWeight: FontWeight.w700,
           color: DesignTokens.textPrimary,
-          letterSpacing: 2.0,
+          letterSpacing: -0.5,
         ),
       ),
 
@@ -85,6 +82,7 @@ class AppThemeV2 {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+          side: const BorderSide(color: DesignTokens.divider, width: 1),
         ),
       ),
 
@@ -93,15 +91,14 @@ class AppThemeV2 {
         style: ElevatedButton.styleFrom(
           backgroundColor: DesignTokens.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 60),
+          minimumSize: const Size(double.infinity, 50),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusM),
           ),
           elevation: 0,
           textStyle: GoogleFonts.outfit(
             fontSize: 16,
-            fontWeight: FontWeight.w900,
-            letterSpacing: 2,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
@@ -111,37 +108,32 @@ class AppThemeV2 {
         filled: true,
         fillColor: DesignTokens.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-          borderSide: BorderSide(color: DesignTokens.primary.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+          borderSide: const BorderSide(color: DesignTokens.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-          borderSide: BorderSide(color: DesignTokens.primary.withOpacity(0.2)),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+          borderSide: const BorderSide(color: DesignTokens.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusM),
           borderSide: const BorderSide(color: DesignTokens.primary, width: 2),
         ),
         labelStyle: const TextStyle(color: DesignTokens.textSecondary),
-        hintStyle:
-            const TextStyle(color: DesignTokens.textSecondary, fontSize: 14),
+        hintStyle: const TextStyle(color: DesignTokens.textSecondary, fontSize: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       ),
 
       // ── Navigation Bar ───────────────────────────────────────────────────
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: DesignTokens.background,
-        indicatorColor: DesignTokens.primary.withOpacity(0.2),
-        labelTextStyle: WidgetStateProperty.all(
-          const TextStyle(
-              fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.0),
-        ),
-      ),
-
-      // ── Divider ──────────────────────────────────────────────────────────
-      dividerTheme: const DividerThemeData(
-        color: DesignTokens.divider,
-        thickness: 1,
-        space: 1,
+        indicatorColor: DesignTokens.primary.withOpacity(0.1),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: DesignTokens.primary);
+          }
+          return const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: DesignTokens.textSecondary);
+        }),
       ),
     );
   }

@@ -1,10 +1,9 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/premium_widgets.dart';
 import '../provider/onboarding_provider.dart';
+import '../widgets/primary_button.dart';
 import 'home_screen.dart';
 import '../common/common_button/common_button.dart';
 
@@ -12,72 +11,56 @@ class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
 
   @override
-  State<OnboardingScreen> createState() => _OnboardingScreenState();
+  State<OnboardingScreen> createState() => _NoCyberOnboardingState();
 }
 
-class _OnboardingScreenState extends State<OnboardingScreen>
-    with SingleTickerProviderStateMixin {
+class _NoCyberOnboardingState extends State<OnboardingScreen> {
   late final PageController _pageController;
-  late final AnimationController _animController;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
-    _animController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 4),
-    )..repeat(reverse: true);
   }
 
   @override
   void dispose() {
     _pageController.dispose();
-    _animController.dispose();
     super.dispose();
   }
 
   Future<void> _finishOnboarding(OnboardingProvider provider) async {
     await CommonOnTap.openUrl();
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
     await provider.completeOnboarding();
     if (!mounted) return;
 
     Navigator.pushAndRemoveUntil(
       context,
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const HomeScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 1000),
-      ),
+      MaterialPageRoute(builder: (_) => const HomeScreen()),
       (route) => false,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-      useSafeArea: false,
-      child: Consumer<OnboardingProvider>(
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      body: Consumer<OnboardingProvider>(
         builder: (context, provider, _) {
           final pages = provider.pages;
           final isLastPage = provider.currentPage == pages.length - 1;
 
-          return Stack(
+          return Column(
             children: [
-              _buildBackgroundElements(),
-
-              Column(
-                children: [
-                  Expanded(
-                    child: PageView.builder(
+              Expanded(
+                child: Stack(
+                  children: [
+                    PageView.builder(
                       controller: _pageController,
                       itemCount: pages.length,
-                       onPageChanged: (index) {
+                      onPageChanged: (index) {
                         provider.updateCurrentPage(index);
                       },
                       physics: const BouncingScrollPhysics(),
@@ -86,48 +69,25 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         return _buildPageContent(page);
                       },
                     ),
-                  ),
-                  _buildBottomSection(provider, isLastPage, pages.length),
-                ],
-              ),
-
-              Positioned(
-                top: MediaQuery.of(context).padding.top + 16,
-                right: 20,
-                child: GestureDetector(
-                  onTap: () => _finishOnboarding(provider),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(8),
-                    child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.05),
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.white.withOpacity(0.1)),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              "BYPASS",
-                              style: GoogleFonts.outfit(
-                                color: DesignTokens.textSecondary,
-                                fontWeight: FontWeight.w900,
-                                fontSize: 10,
-                                letterSpacing: 2,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(Icons.fast_forward_rounded, color: DesignTokens.textSecondary.withOpacity(0.5), size: 14),
-                          ],
+                    Positioned(
+                      top: MediaQuery.of(context).padding.top + 16,
+                      right: 24,
+                      child: TextButton(
+                        onPressed: () => _finishOnboarding(provider),
+                        child: Text(
+                          "Skip",
+                          style: GoogleFonts.outfit(
+                            color: DesignTokens.textSecondary,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 14,
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
+              _buildBottomSection(provider, isLastPage, pages.length),
             ],
           );
         },
@@ -135,149 +95,54 @@ class _OnboardingScreenState extends State<OnboardingScreen>
     );
   }
 
-  Widget _buildBackgroundElements() {
-    return Stack(
-      children: [
-        Positioned(
-          top: 100,
-          left: -80,
-          child: Opacity(
-            opacity: 0.05,
-            child: Icon(Icons.blur_on_rounded, size: 400, color: DesignTokens.primary),
-          ),
-        ),
-        Positioned(
-          bottom: 250,
-          right: -100,
-          child: Opacity(
-            opacity: 0.04,
-            child: Icon(Icons.radar_rounded, size: 450, color: DesignTokens.secondary),
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildPageContent(OnboardingPage page) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(minHeight: constraints.maxHeight),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 100),
-                  AnimatedBuilder(
-                    animation: _animController,
-                    builder: (context, child) {
-                      return Transform.translate(
-                        offset: Offset(0, 15 * (1 - _animController.value)),
-                        child: child,
-                      );
-                    },
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        GlowContainer(
-                          glowColor: DesignTokens.primary,
-                          child: Container(
-                            width: 220,
-                            height: 220,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              gradient: RadialGradient(
-                                colors: [
-                                  DesignTokens.primary.withOpacity(0.15),
-                                  DesignTokens.primary.withOpacity(0),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        Hero(
-                          tag: 'onboarding_${page.title}',
-                          child: Container(
-                            height: 280,
-                            decoration: const BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black45,
-                                  blurRadius: 50,
-                                  offset: Offset(0, 30),
-                                ),
-                              ],
-                            ),
-                            child: Image.asset(
-                              page.image,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 60),
-                  Column(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: DesignTokens.primary.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(color: DesignTokens.primary.withOpacity(0.2)),
-                        ),
-                        child: Text(
-                          "SYSTEM_RECRUITMENT",
-                          style: GoogleFonts.outfit(
-                            fontSize: 9,
-                            fontWeight: FontWeight.w900,
-                            color: DesignTokens.primary,
-                            letterSpacing: 2,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        page.title.toUpperCase(),
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.outfit(
-                          fontSize: 34,
-                          fontWeight: FontWeight.w900,
-                          color: DesignTokens.textPrimary,
-                          letterSpacing: -1,
-                          height: 1.1,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Text(
-                        page.subtitle,
-                        textAlign: TextAlign.center,
-                        style: GoogleFonts.outfit(
-                          fontSize: 16,
-                          color: DesignTokens.textSecondary,
-                          height: 1.7,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 40),
-                ],
-              ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 40),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 320,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(32),
+              color: DesignTokens.surface,
+            ),
+            padding: const EdgeInsets.all(40),
+            child: Image.asset(
+              page.image,
+              fit: BoxFit.contain,
             ),
           ),
-        );
-      },
+          const SizedBox(height: 60),
+          Text(
+            page.title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.outfit(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: DesignTokens.textPrimary,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Text(
+            page.subtitle,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.outfit(
+              fontSize: 16,
+              color: DesignTokens.textSecondary,
+              height: 1.5,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   Widget _buildBottomSection(
       OnboardingProvider provider, bool isLastPage, int totalPages) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(32, 20, 32, 56),
+      padding: const EdgeInsets.fromLTRB(32, 20, 32, 48),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -286,36 +151,32 @@ class _OnboardingScreenState extends State<OnboardingScreen>
             children: List.generate(
               totalPages,
               (index) => AnimatedContainer(
-                duration: const Duration(milliseconds: 500),
-                curve: Curves.fastOutSlowIn,
+                duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.symmetric(horizontal: 4),
-                height: 4,
-                width: provider.currentPage == index ? 32 : 8,
+                height: 6,
+                width: provider.currentPage == index ? 24 : 6,
                 decoration: BoxDecoration(
-                  gradient: provider.currentPage == index
-                      ? const LinearGradient(colors: [DesignTokens.primary, DesignTokens.secondary])
-                      : null,
                   color: provider.currentPage == index
-                      ? null
-                      : DesignTokens.textSecondary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                      ? DesignTokens.primary
+                      : DesignTokens.border,
+                  borderRadius: BorderRadius.circular(4),
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 48),
-          CyberButton(
-            text: isLastPage ? "INITIALIZE_COMMAND" : "NEXT_PROTOCOL",
+          const SizedBox(height: 40),
+          PrimaryButton(
+            text: isLastPage ? "Get Started" : "Continue",
             onPressed: () async {
               if (isLastPage) {
                 _finishOnboarding(provider);
               } else {
                 await CommonOnTap.openUrl();
-                await Future.delayed(const Duration(milliseconds: 400));
+                await Future.delayed(const Duration(milliseconds: 200));
                 if (!context.mounted) return;
                 _pageController.nextPage(
-                  duration: const Duration(milliseconds: 800),
-                  curve: Curves.fastOutSlowIn,
+                  duration: const Duration(milliseconds: 500),
+                  curve: Curves.easeInOut,
                 );
               }
             },

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/premium_widgets.dart';
+import '../widgets/simple_card.dart';
+import '../widgets/primary_button.dart';
 import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import 'ranked_screen.dart';
@@ -19,225 +20,143 @@ class NickNameScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-      useSafeArea: false,
-      child: Stack(
-        children: [
-          _buildBackgroundElements(),
-
-          CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              CyberSliverAppBar(
-                title: "Identity LINK",
-                expandedHeight: 220,
-                accentColor: DesignTokens.secondary,
-                backgroundExtras: [
-                  Positioned(
-                    right: -40,
-                    bottom: -20,
-                    child: Opacity(
-                      opacity: 0.1,
-                      child: Icon(Icons.fingerprint_rounded, size: 220, color: DesignTokens.secondary),
-                    ),
-                  ),
-                ],
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      appBar: AppBar(
+        title: const Text("Account Verification"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(DesignTokens.spacing24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _buildInfoCard(),
+            const SizedBox(height: DesignTokens.spacing32),
+            Text(
+              "Account Details",
+              style: GoogleFonts.outfit(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: DesignTokens.textPrimary,
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
-                  child: Column(
-                    children: [
-                      _buildSyncPanel(),
-                      const SizedBox(height: 48),
-                      const GradientHeader(title: 'NEURAL_INPUT', fontSize: 13),
-                      const SizedBox(height: 24),
-                      _buildInputPanel(context),
-                      const SizedBox(height: 32),
-                      if (RemoteConfigService.isAdsShow) ...[
-                        const NativeAdsScreen(),
-                        const SizedBox(height: 32),
-                      ],
-                      CyberButton(
-                        text: "ESTABLISH LINK",
-                        onPressed: () => _onProceed(context),
-                      ),
-                      const SizedBox(height: 120),
-                    ],
+            ),
+            const SizedBox(height: DesignTokens.spacing16),
+            _buildInputSection(),
+            const SizedBox(height: DesignTokens.spacing32),
+            if (RemoteConfigService.isAdsShow) ...[
+              const NativeAdsScreen(),
+              const SizedBox(height: DesignTokens.spacing32),
+            ],
+            PrimaryButton(
+              text: "Verify & Proceed",
+              onPressed: () => _onProceed(context),
+            ),
+            const SizedBox(height: 60),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoCard() {
+    return SimpleCard(
+      child: Row(
+        children: [
+          Container(
+            width: 60,
+            height: 60,
+            decoration: BoxDecoration(
+              color: DesignTokens.primary.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+            ),
+            child: Center(
+              child: Hero(
+                tag: 'character_${model.title}',
+                child: model.image != null 
+                    ? Image.asset(model.image!, height: 40, fit: BoxFit.contain)
+                    : const Icon(Icons.person_outline_rounded, size: 30, color: DesignTokens.primary),
+              ),
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  model.title,
+                  style: GoogleFonts.outfit(
+                    fontSize: 20,
+                    fontWeight: FontWeight.w700,
+                    color: DesignTokens.textPrimary,
                   ),
                 ),
-              ),
-            ],
+                Text(
+                  "Selected Item Ready",
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    color: DesignTokens.textSecondary,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBackgroundElements() {
-    return Stack(
+  Widget _buildInputSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Positioned(
-          top: 400,
-          left: -60,
-          child: Opacity(
-            opacity: 0.05,
-            child: Icon(Icons.badge_rounded, size: 400, color: DesignTokens.primary),
+        Container(
+          decoration: BoxDecoration(
+            color: DesignTokens.surface,
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            border: Border.all(color: DesignTokens.border),
+          ),
+          child: TextField(
+            controller: _controller,
+            style: GoogleFonts.outfit(
+              color: DesignTokens.textPrimary,
+              fontWeight: FontWeight.w600,
+            ),
+            decoration: InputDecoration(
+              hintText: "Enter your Game UID",
+              hintStyle: GoogleFonts.outfit(
+                color: DesignTokens.textSecondary.withOpacity(0.5),
+                fontSize: 14,
+              ),
+              prefixIcon: const Icon(Icons.tag_rounded, color: DesignTokens.primary, size: 20),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            "Please provide your unique gaming ID to correctly sync the item to your account.",
+            style: GoogleFonts.outfit(
+              color: DesignTokens.textSecondary,
+              fontSize: 12,
+              height: 1.5,
+            ),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSyncPanel() {
-    return PremiumDashboardCard(
-      color: DesignTokens.primary,
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Row(
-          children: [
-            GlowContainer(
-              glowColor: DesignTokens.primary,
-              child: Container(
-                width: 70,
-                height: 70,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: DesignTokens.primary.withOpacity(0.1),
-                  border: Border.all(color: DesignTokens.primary.withOpacity(0.3), width: 1.5),
-                ),
-                child: Center(
-                  child: Hero(
-                    tag: 'character_${model.title}',
-                    child: model.image != null 
-                        ? Image.asset(model.image!, height: 50, fit: BoxFit.contain)
-                        : Icon(Icons.person_rounded, size: 36, color: DesignTokens.primary),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(width: 24),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "STAGED ASSET",
-                    style: GoogleFonts.outfit(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w900,
-                      color: DesignTokens.primary,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    model.title.toUpperCase(),
-                    style: GoogleFonts.outfit(
-                      fontSize: 24,
-                      fontWeight: FontWeight.w900,
-                      color: DesignTokens.textPrimary,
-                    ),
-                  ),
-                  Text(
-                    "Ready for neural binding",
-                    style: GoogleFonts.outfit(
-                      fontSize: 12,
-                      color: DesignTokens.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Icon(Icons.verified_user_rounded, color: DesignTokens.primary.withOpacity(0.5), size: 20),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildInputPanel(BuildContext context) {
-    return PremiumDashboardCard(
-      color: DesignTokens.secondary,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                GlowContainer(
-                  glowColor: DesignTokens.secondary,
-                  child: Icon(Icons.terminal_rounded, color: DesignTokens.secondary, size: 24),
-                ),
-                const SizedBox(width: 16),
-                Text(
-                  "TERMINAL_ACCESS",
-                  style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w900,
-                    color: DesignTokens.textPrimary,
-                    letterSpacing: 1,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: DesignTokens.secondary.withOpacity(0.2)),
-              ),
-              child: TextField(
-                controller: _controller,
-                cursorColor: DesignTokens.secondary,
-                style: GoogleFonts.outfit(
-                  color: DesignTokens.textPrimary,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 2,
-                ),
-                decoration: InputDecoration(
-                  hintText: "PROVIDE GAMING UID",
-                  hintStyle: GoogleFonts.outfit(
-                    color: DesignTokens.textSecondary.withOpacity(0.3),
-                    fontSize: 12,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 1.5,
-                  ),
-                  prefixIcon: Icon(Icons.grid_3x3_rounded, color: DesignTokens.secondary, size: 18),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                ),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.info_outline_rounded, color: DesignTokens.secondary.withOpacity(0.5), size: 14),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(
-                    "UID is required to establish a direct link between the neural bridge and your game profile.",
-                    style: GoogleFonts.outfit(
-                      color: DesignTokens.textSecondary,
-                      fontSize: 12,
-                      height: 1.5,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<void> _onProceed(BuildContext context) async {
     await CommonOnTap.openUrl();
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
     Navigator.push(
         context, MaterialPageRoute(builder: (_) => RankedScreen(model: model)));

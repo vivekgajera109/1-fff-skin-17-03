@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/premium_widgets.dart';
+import '../widgets/simple_card.dart';
+import '../widgets/primary_button.dart';
 
 class NoInternetScreen extends StatefulWidget {
   const NoInternetScreen({super.key});
@@ -19,7 +20,7 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
 
     setState(() => _checking = true);
 
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 1500));
 
     final hasInternet =
         await InternetConnectionChecker.createInstance().hasConnection;
@@ -37,199 +38,99 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-      useSafeArea: false,
-      child: Stack(
-        children: [
-          _buildBackgroundElements(),
-
-          SafeArea(
-            child: Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildErrorIndicator(),
-
-                    const SizedBox(height: 50),
-
-                    _buildErrorMessage(),
-
-                    const SizedBox(height: 50),
-
-                    _buildActionSection(),
-
-                    const SizedBox(height: 48),
-
-                    Text(
-                      "TERMINAL_STATUS: DISCONNECTED",
-                      style: GoogleFonts.outfit(
-                        fontSize: 9,
-                        fontWeight: FontWeight.w900,
-                        color: DesignTokens.accent.withOpacity(0.3),
-                        letterSpacing: 3,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBackgroundElements() {
-    return Stack(
-      children: [
-        Positioned(
-          top: -150,
-          right: -100,
-          child: Opacity(
-            opacity: 0.08,
-            child: Icon(Icons.wifi_off_rounded,
-                size: 450, color: DesignTokens.accent),
-          ),
-        ),
-        Positioned(
-          bottom: -100,
-          left: -80,
-          child: Opacity(
-            opacity: 0.05,
-            child: Icon(Icons.radar_rounded,
-                size: 350, color: DesignTokens.primary),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildErrorIndicator() {
-    return GlowContainer(
-      glowColor: DesignTokens.accent,
-      child: Container(
-        padding: const EdgeInsets.all(32),
-        decoration: BoxDecoration(
-          color: DesignTokens.accent.withOpacity(0.1),
-          shape: BoxShape.circle,
-          border: Border.all(
-            color: DesignTokens.accent.withOpacity(0.3),
-            width: 2,
-          ),
-        ),
-        child: const Icon(
-          Icons.signal_wifi_connected_no_internet_4_rounded,
-          size: 64,
-          color: DesignTokens.accent,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorMessage() {
-    return PremiumDashboardCard(
-      color: DesignTokens.accent,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          children: [
-            Text(
-              "CONNECTION_FAILED",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
-                fontSize: 24,
-                fontWeight: FontWeight.w900,
-                color: DesignTokens.textPrimary,
-                letterSpacing: 2.0,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              height: 2,
-              width: 60,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [DesignTokens.accent, DesignTokens.accent.withOpacity(0)],
-                ),
-                borderRadius: BorderRadius.circular(1),
-              ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              "The secure data stream has been interrupted. Restore network protocols to re-establish secure terminal access.",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
-                fontSize: 15,
-                color: DesignTokens.textSecondary,
-                height: 1.6,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildActionSection() {
-    if (_checking) {
-      return Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-            decoration: BoxDecoration(
-              color: DesignTokens.primary.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: DesignTokens.primary.withOpacity(0.2)),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(DesignTokens.spacing24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const SizedBox(
-                  width: 14,
-                  height: 14,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primary),
+                Container(
+                  padding: const EdgeInsets.all(40),
+                  decoration: BoxDecoration(
+                    color: DesignTokens.accent.withOpacity(0.05),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.wifi_off_rounded,
+                    size: 80,
+                    color: DesignTokens.accent,
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(height: 48),
                 Text(
-                  "RESTORING_SIGNAL...",
+                  "Connection Lost",
                   style: GoogleFonts.outfit(
-                    color: DesignTokens.primary,
-                    fontSize: 10,
-                    fontWeight: FontWeight.w900,
-                    letterSpacing: 2,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w700,
+                    color: DesignTokens.textPrimary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Text(
+                    "It seems your internet connection is unavailable. Please check your settings and try again.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      color: DesignTokens.textSecondary,
+                      height: 1.5,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 48),
+                SimpleCard(
+                  padding: const EdgeInsets.all(DesignTokens.spacing24),
+                  child: Column(
+                    children: [
+                      if (_checking)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primary),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              "Checking Connection...",
+                              style: GoogleFonts.outfit(
+                                color: DesignTokens.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        )
+                      else
+                        PrimaryButton(
+                          text: "Retry Connection",
+                          onPressed: _retryConnection,
+                        ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  "Status: Offline",
+                  style: GoogleFonts.outfit(
+                    fontSize: 12,
+                    color: DesignTokens.textSecondary.withOpacity(0.5),
+                    letterSpacing: 1,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 32),
-          SizedBox(
-            width: 180,
-            height: 2,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(1),
-              child: LinearProgressIndicator(
-                backgroundColor: DesignTokens.primary.withOpacity(0.05),
-                valueColor: const AlwaysStoppedAnimation<Color>(DesignTokens.primary),
-              ),
-            ),
-          ),
-        ],
-      );
-    } else {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: CyberButton(
-          text: "REBOOT_CONNECTION",
-          onPressed: _retryConnection,
         ),
-      );
-    }
+      ),
+    );
   }
 }
 

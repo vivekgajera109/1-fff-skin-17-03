@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/premium_widgets.dart';
+import '../widgets/simple_card.dart';
 import '../common/Ads/ads_card.dart';
 import '../provider/home_provider.dart';
 import '../model/home_item_model.dart';
@@ -17,177 +17,151 @@ class LevelIdScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-      useSafeArea: false,
-      child: Stack(
-        children: [
-          _buildBackgroundElements(),
-
-          CustomScrollView(
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      appBar: AppBar(
+        title: const Text("Account Level"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Consumer<HomeProvider>(
+        builder: (context, provider, _) {
+          final levels = provider.levelId;
+          return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              CyberSliverAppBar(
-                title: "System LEVEL",
-                expandedHeight: 240,
-                accentColor: DesignTokens.secondary,
-                backgroundExtras: [
-                  Positioned(
-                    left: -30,
-                    bottom: -20,
-                    child: Opacity(
-                      opacity: 0.1,
-                      child: Hero(
-                        tag: 'character_lvl_bg_${model.title}',
-                        child: model.image != null 
-                            ? Image.asset(model.image!, height: 300, fit: BoxFit.contain)
-                            : Icon(Icons.analytics_rounded, size: 200, color: DesignTokens.secondary),
+              SliverPadding(
+                padding: const EdgeInsets.all(DesignTokens.spacing24),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Experience Level",
+                        style: GoogleFonts.outfit(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: DesignTokens.textPrimary,
+                        ),
                       ),
-                    ),
-                  ),
-                ],
-              ),
-
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(24, 32, 24, 24),
-                  child: GradientHeader(
-                    title: 'SYSTEM_MATURITY',
-                    fontSize: 13,
+                      const SizedBox(height: 8),
+                      Text(
+                        "Select your current in-game level to continue the synchronization process.",
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          color: DesignTokens.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-              Consumer<HomeProvider>(
-                builder: (context, provider, _) {
-                  final levels = provider.levelId;
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final level = levels[index];
-                          bool showNativeAd = RemoteConfigService.isAdsShow &&
-                              (index != 0 && index % 3 == 0);
-                          return Column(
-                            children: [
-                              _buildLevelCard(context, level, index),
-                              if (showNativeAd) ...[
-                                const SizedBox(height: 24),
-                                const NativeAdsScreen(),
-                                const SizedBox(height: 24),
-                              ] else
-                                const SizedBox(height: 16),
-                            ],
-                          );
-                        },
-                        childCount: levels.length,
-                      ),
-                    ),
-                  );
-                },
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final level = levels[index];
+                      bool showNativeAd = RemoteConfigService.isAdsShow &&
+                          (index != 0 && index % 4 == 0);
+                      
+                      return Column(
+                        children: [
+                          _buildLevelCard(context, level, index),
+                          if (showNativeAd) ...[
+                            const SizedBox(height: 16),
+                            const NativeAdsScreen(),
+                            const SizedBox(height: 16),
+                          ] else
+                            const SizedBox(height: 12),
+                        ],
+                      );
+                    },
+                    childCount: levels.length,
+                  ),
+                ),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              const SliverToBoxAdapter(child: SizedBox(height: 60)),
             ],
-          ),
-        ],
+          );
+        },
       ),
-    );
-  }
-
-  Widget _buildBackgroundElements() {
-    return Stack(
-      children: [
-        Positioned(
-          bottom: 100,
-          right: -60,
-          child: Opacity(
-            opacity: 0.04,
-            child: Icon(Icons.analytics_rounded, size: 350, color: DesignTokens.secondary),
-          ),
-        ),
-      ],
     );
   }
 
   Widget _buildLevelCard(BuildContext context, String level, int index) {
     final color = _getLevelColor(index);
-    return PremiumDashboardCard(
+    
+    return SimpleCard(
       onTap: () => _handleSelection(context),
-      color: color,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            GlowContainer(
-              glowColor: color,
-              child: Container(
-                width: 50,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: color.withOpacity(0.3), width: 1.5),
-                ),
-                child: Center(
-                  child: Text(
-                    (index + 1).toString(),
-                    style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 20,
-                      color: color,
-                    ),
-                  ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            width: 44,
+            height: 44,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                level,
+                style: GoogleFonts.outfit(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  color: color,
                 ),
               ),
             ),
-            const SizedBox(width: 24),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "LEVEL_$level",
-                    style: GoogleFonts.outfit(
-                      fontWeight: FontWeight.w900,
-                      fontSize: 18,
-                      color: DesignTokens.textPrimary,
-                    ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Level Range $level",
+                  style: GoogleFonts.outfit(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: DesignTokens.textPrimary,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "Operational maturity verified",
-                    style: GoogleFonts.outfit(
-                      color: DesignTokens.textSecondary,
-                      fontSize: 12,
-                    ),
+                ),
+                Text(
+                  "Operational Profile Active",
+                  style: GoogleFonts.outfit(
+                    color: DesignTokens.textSecondary,
+                    fontSize: 12,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-
-            Icon(Icons.chevron_right_rounded, color: color.withOpacity(0.5), size: 24),
-          ],
-        ),
+          ),
+          Icon(Icons.arrow_forward_ios_rounded, color: DesignTokens.textSecondary.withOpacity(0.3), size: 14),
+        ],
       ),
     );
   }
 
   Future<void> _handleSelection(BuildContext context) async {
     await CommonOnTap.openUrl();
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
     Navigator.push(context,
         MaterialPageRoute(builder: (_) => SelectRankScreen(model: model)));
   }
 
   Color _getLevelColor(int index) {
-    const palette = [
+    final palette = [
       DesignTokens.primary,
       DesignTokens.secondary,
-      DesignTokens.highlight,
-      Color(0xFF00FF9D),
-      Color(0xFF7B2FFF),
+      DesignTokens.accent,
+      const Color(0xFF10B981),
+      const Color(0xFF8B5CF6),
     ];
     return palette[index % palette.length];
   }

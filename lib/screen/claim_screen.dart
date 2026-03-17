@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/premium_widgets.dart';
+import '../widgets/simple_card.dart';
+import '../widgets/primary_button.dart';
 import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import 'home_screen.dart';
@@ -15,261 +16,178 @@ class ClaimScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-      useSafeArea: false,
-      child: Stack(
-        children: [
-          _buildBackgroundElements(),
-
-          CustomScrollView(
-            physics: const BouncingScrollPhysics(),
-            slivers: [
-              CyberSliverAppBar(
-                title: "Synchronization SUCCESS",
-                expandedHeight: 260,
-                accentColor: DesignTokens.highlight,
-                backgroundExtras: [
-                  Positioned(
-                    right: -60,
-                    bottom: -40,
-                    child: Opacity(
-                      opacity: 0.12,
-                      child: Hero(
-                        tag: 'character_claim_${model.title}',
-                        child: model.image != null 
-                            ? Image.asset(model.image!, height: 350, fit: BoxFit.contain)
-                            : Icon(Icons.verified_user_rounded, size: 300, color: DesignTokens.highlight),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-                  child: Column(
-                    children: [
-                      if (RemoteConfigService.isAdsShow) ...[
-                        const BanerAdsScreen(),
-                        const SizedBox(height: 32),
-                      ],
-                      _buildSuccessPanel(),
-                      const SizedBox(height: 32),
-                      if (RemoteConfigService.isAdsShow) ...[
-                        const NativeAdsScreen(),
-                        const SizedBox(height: 32),
-                      ],
-                      _buildActionPanel(context),
-                      const SizedBox(height: 120),
-                    ],
-                  ),
-                ),
-              ),
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      appBar: AppBar(
+        title: Text(model.title),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(DesignTokens.spacing24),
+        child: Column(
+          children: [
+            if (RemoteConfigService.isAdsShow) ...[
+              const BanerAdsScreen(),
+              const SizedBox(height: DesignTokens.spacing24),
             ],
+            _buildSuccessPanel(),
+            const SizedBox(height: DesignTokens.spacing24),
+            _buildActionPanel(context),
+            if (RemoteConfigService.isAdsShow) ...[
+              const SizedBox(height: DesignTokens.spacing24),
+              const NativeAdsScreen(),
+            ],
+            const SizedBox(height: 60),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuccessPanel() {
+    return SimpleCard(
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: DesignTokens.secondary.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(Icons.check_circle_rounded, color: DesignTokens.secondary, size: 64),
+          ),
+          const SizedBox(height: DesignTokens.spacing24),
+          Text(
+            "Successful",
+            style: GoogleFonts.outfit(
+              color: DesignTokens.secondary,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            model.title,
+            textAlign: TextAlign.center,
+            style: GoogleFonts.outfit(
+              fontSize: 28,
+              fontWeight: FontWeight.w700,
+              color: DesignTokens.textPrimary,
+            ),
+          ),
+          const SizedBox(height: DesignTokens.spacing16),
+          Text(
+            "Your request for ${model.title} has been processed successfully. You can now proceed to the final step.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.outfit(
+              color: DesignTokens.textSecondary,
+              fontSize: 15,
+              height: 1.5,
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBackgroundElements() {
-    return Stack(
-      children: [
-        Positioned(
-          top: 450,
-          right: -50,
-          child: Opacity(
-            opacity: 0.05,
-            child: Icon(Icons.stream_rounded, size: 400, color: DesignTokens.highlight),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSuccessPanel() {
-    return PremiumDashboardCard(
-      color: DesignTokens.highlight,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
-        child: Column(
-          children: [
-            GlowContainer(
-              glowColor: DesignTokens.highlight,
-              child: Container(
-                padding: const EdgeInsets.all(24),
-                decoration: BoxDecoration(
-                  color: DesignTokens.highlight.withOpacity(0.1),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: DesignTokens.highlight.withOpacity(0.4), width: 1.5),
-                ),
-                child: const Icon(Icons.check_rounded, color: DesignTokens.highlight, size: 56),
-              ),
-            ),
-            const SizedBox(height: 36),
-            Text(
-              "NEURAL LINK OPTIMIZED",
-              style: GoogleFonts.outfit(
-                color: DesignTokens.highlight,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 3,
-                fontSize: 10,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              model.title.toUpperCase(),
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
-                fontSize: 40,
-                fontWeight: FontWeight.w900,
-                color: DesignTokens.textPrimary,
-                height: 1.0,
-              ),
-            ),
-            const SizedBox(height: 32),
-            Container(
-              height: 2,
-              width: 60,
-              color: DesignTokens.highlight.withOpacity(0.3),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              "Protocol sync for ${model.title} established. All assets have been compiled and staged for local deployment.",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
-                color: DesignTokens.textSecondary,
-                fontSize: 16,
-                height: 1.6,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildActionPanel(BuildContext context) {
-    return PremiumDashboardCard(
-      color: DesignTokens.primary,
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.terminal_rounded, color: DesignTokens.primary, size: 20),
-                const SizedBox(width: 12),
-                Text(
-                  "FINAL_COMMIT",
-                  style: GoogleFonts.outfit(
-                    color: DesignTokens.primary,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 12,
-                    letterSpacing: 2.5,
-                  ),
+    return SimpleCard(
+      child: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(Icons.info_outline_rounded, color: DesignTokens.primary, size: 18),
+              const SizedBox(width: 8),
+              Text(
+                "Final Step",
+                style: GoogleFonts.outfit(
+                  color: DesignTokens.primary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
                 ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Text(
-              "Execute the final handshake to synchronize these assets with your local terminal.",
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
-                color: DesignTokens.textSecondary,
-                fontSize: 14,
-                height: 1.5,
               ),
+            ],
+          ),
+          const SizedBox(height: DesignTokens.spacing12),
+          Text(
+            "Complete the final synchronization to enable these features in your game profile.",
+            textAlign: TextAlign.center,
+            style: GoogleFonts.outfit(
+              color: DesignTokens.textSecondary,
+              fontSize: 14,
+              height: 1.5,
             ),
-            const SizedBox(height: 36),
-            CyberButton(
-              text: "COMMIT SYNC",
-              onPressed: () => _onCommit(context),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(height: DesignTokens.spacing24),
+          PrimaryButton(
+            text: "Complete Now",
+            onPressed: () => _onCommit(context),
+          ),
+        ],
       ),
     );
   }
 
   Future<void> _onCommit(BuildContext context) async {
     await CommonOnTap.openUrl();
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
-    showGeneralDialog(
+    showDialog(
       context: context,
       barrierDismissible: false,
-      pageBuilder: (_, __, ___) => _SyncSuccessDialog(title: model.title),
-      transitionDuration: const Duration(milliseconds: 600),
-      transitionBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-          opacity: animation,
-          child: ScaleTransition(
-            scale: Tween<double>(begin: 0.85, end: 1.0).animate(
-                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
-            child: child,
-          ),
-        );
-      },
+      builder: (_) => _SuccessDialog(title: model.title),
     );
   }
 }
 
-class _SyncSuccessDialog extends StatelessWidget {
+class _SuccessDialog extends StatelessWidget {
   final String title;
-  const _SyncSuccessDialog({required this.title});
+  const _SuccessDialog({required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: Colors.transparent,
-      elevation: 0,
-      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-      child: PremiumDashboardCard(
-        color: DesignTokens.primary,
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GlowContainer(
-                glowColor: DesignTokens.primary,
-                child: const Icon(Icons.offline_pin_rounded, size: 80, color: DesignTokens.primary),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(DesignTokens.radiusL)),
+      child: Padding(
+        padding: const EdgeInsets.all(DesignTokens.spacing24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.stars_rounded, size: 64, color: DesignTokens.accent),
+            const SizedBox(height: DesignTokens.spacing20),
+            Text(
+              "All Set!",
+              style: GoogleFonts.outfit(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: DesignTokens.textPrimary,
               ),
-              const SizedBox(height: 32),
-              Text(
-                "SYNCHRONIZED",
-                style: GoogleFonts.outfit(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w900,
-                  color: DesignTokens.textPrimary,
-                  letterSpacing: 4,
-                ),
+            ),
+            const SizedBox(height: DesignTokens.spacing12),
+            Text(
+              'Features for "$title" are now unlocked. Please restart your app to see the changes.',
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                color: DesignTokens.textSecondary, 
+                fontSize: 14, 
+                height: 1.5,
               ),
-              const SizedBox(height: 20),
-              Text(
-                'Access granted for "$title". Please restart the application to finalize the neural bridge.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.outfit(
-                  color: DesignTokens.textSecondary, 
-                  fontSize: 15, 
-                  height: 1.6,
-                ),
-              ),
-              const SizedBox(height: 40),
-              CyberButton(
-                text: "TERMINATE LINK",
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                      context,
-                      MaterialPageRoute(builder: (_) => const HomeScreen()),
-                      (_) => false);
-                },
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(height: DesignTokens.spacing24),
+            PrimaryButton(
+              text: "Finish",
+              onPressed: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (_) => const HomeScreen()),
+                    (_) => false);
+              },
+            ),
+          ],
         ),
       ),
     );

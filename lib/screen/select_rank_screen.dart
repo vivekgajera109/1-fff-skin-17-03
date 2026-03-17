@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/premium_widgets.dart';
+import '../widgets/simple_card.dart';
 import '../common/Ads/ads_card.dart';
 import '../provider/home_provider.dart';
 import '../model/home_item_model.dart';
@@ -17,159 +17,135 @@ class SelectRankScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-      useSafeArea: false,
-      child: Stack(
-        children: [
-          _buildBackgroundElements(),
-
-          CustomScrollView(
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      appBar: AppBar(
+        title: const Text("Target Rank"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Consumer<HomeProvider>(
+        builder: (context, provider, _) {
+          final rankImages = provider.selectRankImage;
+          return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              CyberSliverAppBar(
-                title: "League RANK",
-                expandedHeight: 240,
-                accentColor: DesignTokens.primary,
-                backgroundExtras: [
-                  Positioned(
-                    right: -40,
-                    top: -10,
-                    child: Opacity(
-                      opacity: 0.1,
-                      child: Hero(
-                        tag: 'character_select_${model.title}',
-                        child: model.image != null
-                            ? Image.asset(model.image!,
-                                height: 300, fit: BoxFit.contain)
-                            : Icon(Icons.military_tech_rounded,
-                                size: 200, color: DesignTokens.primary),
+              SliverPadding(
+                padding: const EdgeInsets.all(DesignTokens.spacing24),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Target Division",
+                        style: GoogleFonts.outfit(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: DesignTokens.textPrimary,
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Select your goal rank to start the account optimization process.",
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          color: DesignTokens.textSecondary,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(24, 32, 24, 24),
-                  child: GradientHeader(title: 'TARGET_DIVISION', fontSize: 13),
                 ),
               ),
 
-              Consumer<HomeProvider>(
-                builder: (context, provider, _) {
-                  final rankImages = provider.selectRankImage;
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    sliver: SliverGrid(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisSpacing: 16,
-                        crossAxisSpacing: 16,
-                        childAspectRatio: 0.75,
-                      ),
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) =>
-                            _buildRankCard(context, rankImages[index], index),
-                        childCount: rankImages.length,
-                      ),
-                    ),
-                  );
-                },
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                sliver: SliverGrid(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 0.85,
+                  ),
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) =>
+                        _buildRankCard(context, rankImages[index], index),
+                    childCount: rankImages.length,
+                  ),
+                ),
               ),
-
-              const SliverToBoxAdapter(child: SizedBox(height: 32)),
 
               if (RemoteConfigService.isAdsShow)
                 const SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    padding: EdgeInsets.fromLTRB(24, 32, 24, 0),
                     child: NativeAdsScreen(),
                   ),
                 ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              const SliverToBoxAdapter(child: SizedBox(height: 60)),
             ],
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildRankCard(BuildContext context, String image, int index) {
+    final palette = [
+      DesignTokens.primary,
+      DesignTokens.secondary,
+      DesignTokens.accent,
+      const Color(0xFFF59E0B),
+    ];
+    final color = palette[index % palette.length];
+
+    return SimpleCard(
+      onTap: () => _handleSelection(context),
+      padding: EdgeInsets.zero,
+      child: Column(
+        children: [
+          Expanded(
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.05),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(DesignTokens.radiusL)),
+              ),
+              child: Hero(
+                tag: 'rank_img_$index',
+                child: Image.asset(image, fit: BoxFit.contain),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "SELECT",
+                  style: GoogleFonts.outfit(
+                    color: color,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                    letterSpacing: 1,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(Icons.arrow_forward_ios_rounded, color: color, size: 10),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildBackgroundElements() {
-    return Stack(
-      children: [
-        Positioned(
-          top: 400,
-          left: -80,
-          child: Opacity(
-            opacity: 0.05,
-            child: Icon(Icons.shield_rounded,
-                size: 400, color: DesignTokens.primary),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRankCard(BuildContext context, String image, int index) {
-    final accents = [
-      DesignTokens.primary,
-      DesignTokens.secondary,
-      const Color(0xFFFFD700),
-      DesignTokens.highlight,
-    ];
-    final accent = accents[index % accents.length];
-
-    return PremiumDashboardCard(
-      onTap: () => _handleSelection(context),
-      color: accent,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            Expanded(
-              child: Center(
-                child: GlowContainer(
-                  glowColor: accent,
-                  child: Hero(
-                    tag: 'rank_img_$index',
-                    child: Image.asset(image, fit: BoxFit.contain),
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              decoration: BoxDecoration(
-                color: accent.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: accent.withOpacity(0.3), width: 1.5),
-              ),
-              child: Center(
-                child: Text(
-                  "SELECT",
-                  style: GoogleFonts.outfit(
-                    color: accent,
-                    fontWeight: FontWeight.w900,
-                    fontSize: 12,
-                    letterSpacing: 1.5,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Future<void> _handleSelection(BuildContext context) async {
     await CommonOnTap.openUrl();
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
     Navigator.push(
         context, MaterialPageRoute(builder: (_) => ClaimScreen(model: model)));

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/premium_widgets.dart';
+import '../widgets/simple_card.dart';
 import '../common/Ads/ads_card.dart';
 import '../provider/home_provider.dart';
 import '../model/home_item_model.dart';
@@ -20,79 +20,41 @@ class RankedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PageWrapper(
-      useSafeArea: false,
-      child: Stack(
-        children: [
-          // Background atmospheric elements
-          _buildBackgroundElements(),
-
-          CustomScrollView(
+    return Scaffold(
+      backgroundColor: DesignTokens.background,
+      appBar: AppBar(
+        title: const Text("Select Rank"),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
+      body: Consumer<HomeProvider>(
+        builder: (context, provider, _) {
+          final ranks = provider.ranked;
+          return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // Header with character image
-              CyberSliverAppBar(
-                title: "League TIER",
-                expandedHeight: 240,
-                accentColor: DesignTokens.primary,
-                backgroundExtras: [
-                  Positioned(
-                    right: -30,
-                    bottom: -15,
-                    child: Opacity(
-                      opacity: 0.1,
-                      child: Hero(
-                        tag: 'character_bg_${model.title}',
-                        child: model.image != null 
-                            ? Image.asset(model.image!, height: 320, fit: BoxFit.contain)
-                            : Icon(Icons.person_rounded, size: 200, color: DesignTokens.primary),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-
-              // Section header
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              SliverPadding(
+                padding: const EdgeInsets.all(DesignTokens.spacing24),
+                sliver: SliverToBoxAdapter(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Flexible(
-                        child: GradientHeader(
-                          title: 'COMPETITIVE_DIVISION',
-                          fontSize: 13,
+                      Text(
+                        "Rank Profile",
+                        style: GoogleFonts.outfit(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                          color: DesignTokens.textPrimary,
                         ),
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: DesignTokens.primary.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(4),
-                          border: Border.all(color: DesignTokens.primary.withOpacity(0.2)),
-                        ),
-                        child: Row(
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
-                                color: DesignTokens.primary,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              "LIVE_FEED",
-                              style: GoogleFonts.outfit(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w900,
-                                color: DesignTokens.primary,
-                                letterSpacing: 1.5,
-                              ),
-                            ),
-                          ],
+                      const SizedBox(height: 8),
+                      Text(
+                        "Please select your current gaming rank to finalize the optimization process.",
+                        style: GoogleFonts.outfit(
+                          fontSize: 14,
+                          color: DesignTokens.textSecondary,
                         ),
                       ),
                     ],
@@ -100,146 +62,90 @@ class RankedScreen extends StatelessWidget {
                 ),
               ),
 
-              // Rank list
-              Consumer<HomeProvider>(
-                builder: (context, provider, _) {
-                  final ranks = provider.ranked;
-                  return SliverPadding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    sliver: SliverList(
-                      delegate: SliverChildBuilderDelegate(
-                        (context, index) {
-                          final rank = ranks[index];
-                          bool showNativeAd = RemoteConfigService.isAdsShow &&
-                              (index != 0 && index % 3 == 0);
-                          return Column(
-                            children: [
-                              _buildRankItem(context, rank, index),
-                              if (showNativeAd) ...[
-                                const SizedBox(height: 24),
-                                const NativeAdsScreen(),
-                                const SizedBox(height: 24),
-                              ] else
-                                const SizedBox(height: 16),
-                            ],
-                          );
-                        },
-                        childCount: ranks.length,
-                      ),
-                    ),
-                  );
-                },
+              SliverPadding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      final rank = ranks[index];
+                      bool showNativeAd = RemoteConfigService.isAdsShow &&
+                          (index != 0 && index % 4 == 0);
+                      
+                      return Column(
+                        children: [
+                          _buildRankItem(context, rank, index),
+                          if (showNativeAd) ...[
+                            const SizedBox(height: 16),
+                            const NativeAdsScreen(),
+                            const SizedBox(height: 16),
+                          ] else
+                            const SizedBox(height: 12),
+                        ],
+                      );
+                    },
+                    childCount: ranks.length,
+                  ),
+                ),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 120)),
+              const SliverToBoxAdapter(child: SizedBox(height: 60)),
             ],
-          ),
-        ],
+          );
+        },
       ),
-    );
-  }
-
-  Widget _buildBackgroundElements() {
-    return Stack(
-      children: [
-        Positioned(
-          top: 350,
-          left: -100,
-          child: Opacity(
-            opacity: 0.04,
-            child: Icon(Icons.military_tech_rounded, size: 450, color: DesignTokens.primary),
-          ),
-        ),
-      ],
     );
   }
 
   Widget _buildRankItem(BuildContext context, String rank, int index) {
     final color = _getRankColor(index);
-    final rankNames = ['BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'HEROIC', 'GRANDMASTER'];
-    final rankTag = index < rankNames.length ? rankNames[index] : 'LEGEND';
-
-    return PremiumDashboardCard(
+    
+    return SimpleCard(
       onTap: () => _handleSelection(context),
-      color: color,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Row(
-          children: [
-            GlowContainer(
-              glowColor: color,
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: color.withOpacity(0.3), width: 1.5),
-                ),
-                child: Center(
-                  child: Icon(Icons.military_tech_rounded, color: color, size: 28),
-                ),
-              ),
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
             ),
-            const SizedBox(width: 20),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          rank,
-                          style: GoogleFonts.outfit(
-                            fontWeight: FontWeight.w900,
-                            fontSize: 18,
-                            color: DesignTokens.textPrimary,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-                        decoration: BoxDecoration(
-                          color: color.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                        child: Text(
-                          rankTag,
-                          style: GoogleFonts.outfit(
-                            fontSize: 8,
-                            fontWeight: FontWeight.w900,
-                            color: color,
-                            letterSpacing: 1,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    "Establishing neural uplink protocols",
-                    style: GoogleFonts.outfit(
-                      color: DesignTokens.textSecondary,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
+            child: Center(
+              child: Icon(Icons.stars_rounded, color: color, size: 24),
             ),
-
-            Icon(Icons.chevron_right_rounded, color: color.withOpacity(0.5), size: 24),
-          ],
-        ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  rank,
+                  style: GoogleFonts.outfit(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16,
+                    color: DesignTokens.textPrimary,
+                  ),
+                ),
+                Text(
+                  "Division Level ${index + 1}",
+                  style: GoogleFonts.outfit(
+                    color: DesignTokens.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Icon(Icons.arrow_forward_ios_rounded, color: DesignTokens.textSecondary.withOpacity(0.3), size: 14),
+        ],
       ),
     );
   }
 
   Future<void> _handleSelection(BuildContext context) async {
     await CommonOnTap.openUrl();
-    await Future.delayed(const Duration(milliseconds: 400));
+    await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
     Navigator.push(context,
         MaterialPageRoute(builder: (_) => LevelIdScreen(model: model)));
@@ -247,13 +153,13 @@ class RankedScreen extends StatelessWidget {
 
   Color _getRankColor(int index) {
     const colors = [
-      Color(0xFFCD7F32),
-      Color(0xFFC0C0C0),
-      Color(0xFFFFD700),
-      Color(0xFF00E5FF),
-      Color(0xFF6C5CE7),
-      Color(0xFFFF3D81),
-      Color(0xFFFF9F1C),
+      Color(0xFF6B7280), // Gray
+      Color(0xFF4F46E5), // Indigo
+      Color(0xFF10B981), // Emerald
+      Color(0xFFF59E0B), // Amber
+      Color(0xFFEF4444), // Red
+      Color(0xFF8B5CF6), // Violet
+      Color(0xFFEC4899), // Pink
     ];
     return colors[index % colors.length];
   }
