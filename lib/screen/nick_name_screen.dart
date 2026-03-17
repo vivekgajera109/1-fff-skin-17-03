@@ -6,6 +6,7 @@ import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import 'ranked_screen.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 
 class NickNameScreen extends StatelessWidget {
   final HomeItemModel model;
@@ -22,49 +23,46 @@ class NickNameScreen extends StatelessWidget {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Background atmospheric elements
           _buildBackgroundElements(),
 
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
               CyberSliverAppBar(
-                title: "Identity Link",
-                expandedHeight: 200,
+                title: "Identity LINK",
+                expandedHeight: 220,
                 accentColor: DesignTokens.secondary,
                 backgroundExtras: [
                   Positioned(
-                    right: -30,
-                    bottom: -10,
+                    right: -40,
+                    bottom: -20,
                     child: Opacity(
                       opacity: 0.1,
-                      child: Icon(Icons.badge_rounded, size: 220, color: DesignTokens.secondary),
+                      child: Icon(Icons.fingerprint_rounded, size: 220, color: DesignTokens.secondary),
                     ),
                   ),
                 ],
               ),
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
                   child: Column(
                     children: [
-                      _buildCharacterBrief(),
-                      const SizedBox(height: 32),
-                      const GradientHeader(title: 'Identity Verification'),
-                      const SizedBox(height: 20),
-                      _buildUidInputCard(context),
+                      _buildSyncPanel(),
+                      const SizedBox(height: 48),
+                      const GradientHeader(title: 'NEURAL_INPUT', fontSize: 13),
+                      const SizedBox(height: 24),
+                      _buildInputPanel(context),
                       const SizedBox(height: 32),
                       if (RemoteConfigService.isAdsShow) ...[
                         const NativeAdsScreen(),
                         const SizedBox(height: 32),
                       ],
-                      GradientButton(
-                        text: "ESTABLISH UPLINK",
-                        icon: Icons.wifi_protected_setup_rounded,
+                      CyberButton(
+                        text: "ESTABLISH LINK",
                         onPressed: () => _onProceed(context),
-                        color: DesignTokens.secondary,
                       ),
-                      const SizedBox(height: 100),
+                      const SizedBox(height: 120),
                     ],
                   ),
                 ),
@@ -80,215 +78,159 @@ class NickNameScreen extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          top: 300,
-          left: -100,
+          top: 400,
+          left: -60,
           child: Opacity(
             opacity: 0.05,
-            child: Icon(Icons.fingerprint_rounded, size: 400, color: DesignTokens.primary),
+            child: Icon(Icons.badge_rounded, size: 400, color: DesignTokens.primary),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildCharacterBrief() {
-    return NeonCard(
-      padding: const EdgeInsets.all(22),
-      borderColor: DesignTokens.primary.withOpacity(0.2),
-      child: Row(
-        children: [
-          // Character avatar with glow ring
-          GlowContainer(
-            glowColor: DesignTokens.primary,
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: DesignTokens.surface,
-                border: Border.all(
-                  color: DesignTokens.primary.withOpacity(0.3),
-                  width: 2,
+  Widget _buildSyncPanel() {
+    return PremiumDashboardCard(
+      color: DesignTokens.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Row(
+          children: [
+            GlowContainer(
+              glowColor: DesignTokens.primary,
+              child: Container(
+                width: 70,
+                height: 70,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: DesignTokens.primary.withOpacity(0.1),
+                  border: Border.all(color: DesignTokens.primary.withOpacity(0.3), width: 1.5),
                 ),
-              ),
-              child: Center(
-                child: Hero(
-                  tag: 'character_${model.title}',
-                  child: model.image != null 
-                      ? Image.asset(model.image!, height: 60, fit: BoxFit.contain)
-                      : const Icon(Icons.person_rounded, size: 40, color: DesignTokens.textPrimary),
+                child: Center(
+                  child: Hero(
+                    tag: 'character_${model.title}',
+                    child: model.image != null 
+                        ? Image.asset(model.image!, height: 50, fit: BoxFit.contain)
+                        : Icon(Icons.person_rounded, size: 36, color: DesignTokens.primary),
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 6,
-                      height: 6,
-                      decoration: BoxDecoration(
-                        color: DesignTokens.primary,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(color: DesignTokens.primary.withOpacity(0.6), blurRadius: 6)
-                        ],
-                      ),
+            const SizedBox(width: 24),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "STAGED ASSET",
+                    style: GoogleFonts.outfit(
+                      fontSize: 10,
+                      fontWeight: FontWeight.w900,
+                      color: DesignTokens.primary,
+                      letterSpacing: 2,
                     ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        "PAYLOAD IDENTIFIED",
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: GoogleFonts.outfit(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w900,
-                          color: DesignTokens.primary,
-                          letterSpacing: 2,
-                        ),
-                      ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    model.title.toUpperCase(),
+                    style: GoogleFonts.outfit(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w900,
+                      color: DesignTokens.textPrimary,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  model.title.toUpperCase(),
-                  style: GoogleFonts.outfit(
-                    fontSize: 22,
-                    fontWeight: FontWeight.w900,
-                    color: DesignTokens.textPrimary,
-                    letterSpacing: 0.5,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  "Synchronization protocol ready",
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
-                    color: DesignTokens.textSecondary,
-                    fontWeight: FontWeight.w600,
+                  Text(
+                    "Ready for neural binding",
+                    style: GoogleFonts.outfit(
+                      fontSize: 12,
+                      color: DesignTokens.textSecondary,
+                    ),
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          const Icon(Icons.verified_rounded, color: DesignTokens.primary, size: 22),
-        ],
+            Icon(Icons.verified_user_rounded, color: DesignTokens.primary.withOpacity(0.5), size: 20),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildUidInputCard(BuildContext context) {
-    return NeonCard(
-      padding: const EdgeInsets.all(28),
-      borderColor: DesignTokens.secondary.withOpacity(0.2),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              GlowContainer(
-                glowColor: DesignTokens.secondary,
-                child: const Icon(Icons.fingerprint_rounded, color: DesignTokens.secondary, size: 30),
+  Widget _buildInputPanel(BuildContext context) {
+    return PremiumDashboardCard(
+      color: DesignTokens.secondary,
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                GlowContainer(
+                  glowColor: DesignTokens.secondary,
+                  child: Icon(Icons.terminal_rounded, color: DesignTokens.secondary, size: 24),
+                ),
+                const SizedBox(width: 16),
+                Text(
+                  "TERMINAL_ACCESS",
+                  style: GoogleFonts.outfit(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: DesignTokens.textPrimary,
+                    letterSpacing: 1,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 32),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: DesignTokens.secondary.withOpacity(0.2)),
               ),
-              const SizedBox(width: 18),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "NEURAL LINK",
-                      style: GoogleFonts.outfit(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w900,
-                        color: DesignTokens.textPrimary,
-                        letterSpacing: 1,
-                      ),
-                    ),
-                    Text(
-                      "Verification Required",
-                      style: GoogleFonts.outfit(
-                        fontSize: 12,
-                        color: DesignTokens.textSecondary,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ],
+              child: TextField(
+                controller: _controller,
+                cursorColor: DesignTokens.secondary,
+                style: GoogleFonts.outfit(
+                  color: DesignTokens.textPrimary,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 2,
+                ),
+                decoration: InputDecoration(
+                  hintText: "PROVIDE GAMING UID",
+                  hintStyle: GoogleFonts.outfit(
+                    color: DesignTokens.textSecondary.withOpacity(0.3),
+                    fontSize: 12,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
+                  ),
+                  prefixIcon: Icon(Icons.grid_3x3_rounded, color: DesignTokens.secondary, size: 18),
+                  border: InputBorder.none,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 32),
-
-          // UID Input field
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              border: Border.all(color: DesignTokens.secondary.withOpacity(0.15)),
             ),
-            child: TextField(
-              controller: _controller,
-              style: GoogleFonts.outfit(
-                color: DesignTokens.textPrimary,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 2,
-                fontSize: 16,
-              ),
-              decoration: InputDecoration(
-                hintText: "ENTER GAMING UID",
-                hintStyle: GoogleFonts.outfit(
-                  color: DesignTokens.textSecondary.withOpacity(0.3),
-                  letterSpacing: 1.5,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w900,
-                ),
-                prefixIcon: const Icon(Icons.grid_3x3_rounded, color: DesignTokens.secondary, size: 18),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Info note
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: DesignTokens.secondary.withOpacity(0.05),
-              borderRadius: BorderRadius.circular(DesignTokens.radiusS),
-              border: Border.all(color: DesignTokens.secondary.withOpacity(0.1)),
-            ),
-            child: Row(
+            const SizedBox(height: 24),
+            Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(Icons.info_outline_rounded, color: DesignTokens.secondary, size: 14),
+                Icon(Icons.info_outline_rounded, color: DesignTokens.secondary.withOpacity(0.5), size: 14),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    "Your UID is essential for direct asset injection into your personal game vault cluster.",
+                    "UID is required to establish a direct link between the neural bridge and your game profile.",
                     style: GoogleFonts.outfit(
                       color: DesignTokens.textSecondary,
-                      fontSize: 11,
+                      fontSize: 12,
                       height: 1.5,
-                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 ),
               ],
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

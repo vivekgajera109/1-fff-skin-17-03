@@ -12,10 +12,10 @@ class AppThemeV2 {
       colorScheme: const ColorScheme.dark(
         primary: DesignTokens.primary,
         secondary: DesignTokens.secondary,
-        tertiary: DesignTokens.accent,
+        tertiary: DesignTokens.highlight,
         surface: DesignTokens.surface,
         onSurface: DesignTokens.textPrimary,
-        error: DesignTokens.accent,
+        error: DesignTokens.warning,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
       ),
@@ -24,42 +24,42 @@ class AppThemeV2 {
       textTheme: GoogleFonts.outfitTextTheme(
         const TextTheme(
           displayLarge: TextStyle(
-            fontSize: 32,
+            fontSize: 36,
+            fontWeight: FontWeight.w900,
+            color: DesignTokens.textPrimary,
+            letterSpacing: -1.5,
+          ),
+          displayMedium: TextStyle(
+            fontSize: 30,
             fontWeight: FontWeight.w900,
             color: DesignTokens.textPrimary,
             letterSpacing: -1.0,
           ),
-          displayMedium: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w900,
-            color: DesignTokens.textPrimary,
-            letterSpacing: -0.5,
-          ),
           headlineLarge: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
+            fontSize: 26,
+            fontWeight: FontWeight.w800,
             color: DesignTokens.textPrimary,
           ),
           titleLarge: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
             color: DesignTokens.textPrimary,
-            letterSpacing: 0.5,
+            letterSpacing: 0.8,
           ),
           bodyLarge: TextStyle(
             fontSize: 16,
             color: Color(0xFFE2E8F0),
-            height: 1.5,
+            height: 1.6,
           ),
           bodyMedium: TextStyle(
             fontSize: 14,
             color: DesignTokens.textSecondary,
-            height: 1.4,
+            height: 1.5,
           ),
           labelLarge: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w900,
-            letterSpacing: 1.2,
+            letterSpacing: 1.5,
             color: DesignTokens.textPrimary,
           ),
         ),
@@ -72,10 +72,10 @@ class AppThemeV2 {
         centerTitle: true,
         iconTheme: const IconThemeData(color: DesignTokens.textPrimary),
         titleTextStyle: GoogleFonts.outfit(
-          fontSize: 20,
-          fontWeight: FontWeight.w800,
+          fontSize: 22,
+          fontWeight: FontWeight.w900,
           color: DesignTokens.textPrimary,
-          letterSpacing: 1.2,
+          letterSpacing: 2.0,
         ),
       ),
 
@@ -93,15 +93,15 @@ class AppThemeV2 {
         style: ElevatedButton.styleFrom(
           backgroundColor: DesignTokens.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 55),
+          minimumSize: const Size(double.infinity, 60),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radiusL),
           ),
           elevation: 0,
           textStyle: GoogleFonts.outfit(
             fontSize: 16,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1,
+            fontWeight: FontWeight.w900,
+            letterSpacing: 2,
           ),
         ),
       ),
@@ -112,11 +112,11 @@ class AppThemeV2 {
         fillColor: DesignTokens.surface,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-          borderSide: const BorderSide(color: DesignTokens.divider),
+          borderSide: BorderSide(color: DesignTokens.primary.withOpacity(0.3)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-          borderSide: const BorderSide(color: DesignTokens.divider),
+          borderSide: BorderSide(color: DesignTokens.primary.withOpacity(0.2)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(DesignTokens.radiusL),
@@ -130,10 +130,10 @@ class AppThemeV2 {
       // ── Navigation Bar ───────────────────────────────────────────────────
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: DesignTokens.background,
-        indicatorColor: DesignTokens.primary.withOpacity(0.15),
+        indicatorColor: DesignTokens.primary.withOpacity(0.2),
         labelTextStyle: WidgetStateProperty.all(
           const TextStyle(
-              fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 0.5),
+              fontSize: 12, fontWeight: FontWeight.w900, letterSpacing: 1.0),
         ),
       ),
 
@@ -146,3 +146,4 @@ class AppThemeV2 {
     );
   }
 }
+

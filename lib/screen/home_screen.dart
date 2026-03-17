@@ -15,6 +15,7 @@ import 'select_rank_screen.dart';
 import 'ranked_screen.dart';
 import '../common/Ads/ads_card.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -47,7 +48,7 @@ class _HomeScreenState extends State<HomeScreen> {
           : null,
       child: Stack(
         children: [
-          // Atmospheric background elements
+          // Ambient background elements
           _buildBackgroundElements(),
 
           CustomScrollView(
@@ -55,81 +56,178 @@ class _HomeScreenState extends State<HomeScreen> {
             slivers: [
               // Cyber App Bar
               CyberSliverAppBar(
-                title: "Gaming Dashboard",
+                title: "Neural Interface",
                 showBack: false,
-                expandedHeight: 230,
+                expandedHeight: 250,
                 accentColor: DesignTokens.primary,
                 backgroundExtras: [
                   _buildAppBarOverlay(),
                 ],
               ),
 
-              // User Welcome & Stats
+              // Top Section: Profile & Welcome
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 28, 20, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  padding: const EdgeInsets.fromLTRB(20, 32, 20, 0),
+                  child: Row(
                     children: [
-                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                               Text(
-                                "CURRENT OPERATIVE",
-                                style: GoogleFonts.outfit(
-                                  color: DesignTokens.textSecondary,
-                                  fontSize: 10,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: 2,
+                      _buildProfileAvatar(),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  "COMMANDER",
+                                  style: GoogleFonts.outfit(
+                                    color: DesignTokens.secondary,
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w900,
+                                    letterSpacing: 2,
+                                  ),
                                 ),
+                                const SizedBox(width: 8),
+                                _buildStatusBadge(),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              "AGENT_V_09",
+                              style: GoogleFonts.outfit(
+                                color: DesignTokens.textPrimary,
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: -1,
                               ),
-                              const SizedBox(height: 4),
-                              Text(
-                                "ELITE COMMANDER",
-                                style: GoogleFonts.outfit(
-                                  color: DesignTokens.textPrimary,
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w900,
-                                  letterSpacing: -0.5,
-                                ),
-                              ),
-                            ],
-                          ),
-                          GlowIconButton(
-                            icon: Icons.settings_rounded,
-                            color: DesignTokens.secondary,
-                            onTap: () => _navigate(const SettingScreen()),
-                            size: 22,
-                          ),
-                        ],
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 32),
-                      _buildStatsSection(),
+                      GlowIconButton(
+                        icon: Icons.settings_outlined,
+                        color: DesignTokens.textSecondary,
+                        onTap: () => _navigate(const SettingScreen()),
+                        size: 20,
+                      ),
                     ],
                   ),
                 ),
               ),
 
-              // Menu Grid Header
-              const SliverPadding(
-                padding: EdgeInsets.fromLTRB(20, 40, 20, 0),
-                sliver: SliverToBoxAdapter(
-                  child: GradientHeader(
-                    title: "System Protocols",
-                    fontSize: 13,
+              // Middle Section: Horizontal Featured Tools
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 20),
+                        child: GradientHeader(
+                          title: "Featured Protocols",
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          children: [
+                            _buildFeaturedCard(
+                              "STRIKE READY", 
+                              "Diamond Rewards", 
+                              Icons.bolt_rounded, 
+                              DesignTokens.highlight,
+                              () => _navigate(const DimondTips()),
+                            ),
+                            const SizedBox(width: 16),
+                            _buildFeaturedCard(
+                              "ELITE_SQUAD", 
+                              "Character Index", 
+                              Icons.psychology_rounded, 
+                              DesignTokens.primary,
+                              () {
+                                final provider = Provider.of<HomeProvider>(context, listen: false);
+                                _navigate(CharactersScreen(
+                                  appBarTitle: "Elite Characters", 
+                                  characters: provider.characters, 
+                                  isSquared: false
+                                ));
+                               },
+                            ),
+                            const SizedBox(width: 16),
+                            _buildFeaturedCard(
+                              "ARMORY_SYNC", 
+                              "Pro Weapons", 
+                              Icons.military_tech_rounded, 
+                              DesignTokens.warning,
+                              () {
+                                final provider = Provider.of<HomeProvider>(context, listen: false);
+                                _navigate(CharactersScreen(
+                                  appBarTitle: "Pro Weapons", 
+                                  characters: provider.weapons, 
+                                  isSquared: true
+                                ));
+                               },
+                            ),
+                            const SizedBox(width: 16),
+                            _buildFeaturedCard(
+                              "NEURAL_LINK", 
+                              "Battle Pets", 
+                              Icons.pets_rounded, 
+                              DesignTokens.secondary,
+                              () {
+                                final provider = Provider.of<HomeProvider>(context, listen: false);
+                                _navigate(CharactersScreen(
+                                  appBarTitle: "Tactical Pets", 
+                                  characters: provider.pets, 
+                                  isSquared: false
+                                ));
+                               },
+                            ),
+                            const SizedBox(width: 16),
+                            _buildFeaturedCard(
+                              "VEHICLE_GRID", 
+                              "Combat Vehicles", 
+                              Icons.speed_rounded, 
+                              DesignTokens.highlight,
+                              () {
+                                final provider = Provider.of<HomeProvider>(context, listen: false);
+                                _navigate(CharactersScreen(
+                                  appBarTitle: "Battle Vehicles", 
+                                  characters: provider.vehicles, 
+                                  isSquared: true
+                                ));
+                               },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),
 
-              // Main Menu Grid
-              _buildGridSection(),
+              // Main Section: Advanced Grid
+              const SliverPadding(
+                padding: EdgeInsets.fromLTRB(20, 48, 20, 0),
+                sliver: SliverToBoxAdapter(
+                  child: GradientHeader(
+                    title: "System Grid",
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+
+              _buildMainGrid(),
 
               // Ad Section
               if (RemoteConfigService.isAdsShow) ...[
-                const SliverToBoxAdapter(child: SizedBox(height: 32)),
+                const SliverToBoxAdapter(child: SizedBox(height: 40)),
                 const SliverToBoxAdapter(
                   child: Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
@@ -150,19 +248,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return Stack(
       children: [
         Positioned(
-          top: 300,
-          right: -80,
+          top: 400,
+          right: -100,
           child: Opacity(
-            opacity: 0.04,
-            child: Icon(Icons.hub_rounded, size: 400, color: DesignTokens.primary),
+            opacity: 0.05,
+            child: Icon(Icons.grid_4x4_rounded, size: 450, color: DesignTokens.primary),
           ),
         ),
         Positioned(
-          bottom: 100,
-          left: -60,
+          bottom: 200,
+          left: -80,
           child: Opacity(
-            opacity: 0.03,
-            child: Icon(Icons.security_rounded, size: 350, color: DesignTokens.secondary),
+            opacity: 0.04,
+            child: Icon(Icons.shield_rounded, size: 380, color: DesignTokens.secondary),
           ),
         ),
       ],
@@ -171,50 +269,49 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildAppBarOverlay() {
     return Positioned(
-      bottom: 70,
+      bottom: 80,
       left: 24,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: DesignTokens.secondary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: DesignTokens.secondary.withOpacity(0.3)),
-            ),
+          GlassContainer(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            borderRadius: 6,
+            opacity: 0.1,
+            blur: 4,
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 6,
-                  height: 6,
+                  width: 8,
+                  height: 8,
                   decoration: const BoxDecoration(
-                    color: DesignTokens.secondary,
+                    color: DesignTokens.highlight,
                     shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(color: DesignTokens.highlight, blurRadius: 4)],
                   ),
                 ),
-                const SizedBox(width: 8),
+                const SizedBox(width: 10),
                 Text(
-                  "SECURE UPLINK ACTIVE",
+                  "SECURE PROTOCOL ACTIVE",
                   style: GoogleFonts.outfit(
-                    fontSize: 8,
+                    fontSize: 9,
                     fontWeight: FontWeight.w900,
-                    color: DesignTokens.secondary,
+                    color: DesignTokens.textPrimary,
                     letterSpacing: 2,
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
-            "COMMANDER V5.2.0",
+            "SYS_LINK_07",
             style: GoogleFonts.outfit(
-              fontSize: 14,
+              fontSize: 16,
               fontWeight: FontWeight.w900,
-              color: DesignTokens.textPrimary.withOpacity(0.25),
-              letterSpacing: 4,
+              color: DesignTokens.textPrimary.withOpacity(0.3),
+              letterSpacing: 6,
             ),
           ),
         ],
@@ -222,194 +319,205 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildStatsSection() {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const BouncingScrollPhysics(),
-      clipBehavior: Clip.none,
-      child: Row(
-        children: [
-          _buildStatCard("CREDITS", "99,999", Icons.diamond_rounded, DesignTokens.secondary),
-          const SizedBox(width: 16),
-          _buildStatCard("RANK", "LEGEND", Icons.emoji_events_rounded, const Color(0xFFFFD700)),
-          const SizedBox(width: 16),
-          _buildStatCard("ASSETS", "842", Icons.inventory_2_rounded, DesignTokens.primary),
-        ],
+  Widget _buildProfileAvatar() {
+    return PremiumDashboardCard(
+      width: 70,
+      height: 70,
+      borderRadius: 18,
+      color: DesignTokens.secondary,
+      child: Center(
+        child: Icon(
+          Icons.person_outline_rounded,
+          color: DesignTokens.secondary,
+          size: 32,
+        ),
       ),
     );
   }
 
-  Widget _buildStatCard(String label, String value, IconData icon, Color color) {
-    return NeonCard(
-      width: 145,
-      borderColor: color.withOpacity(0.15),
-      padding: const EdgeInsets.all(20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GlowContainer(
-                glowColor: color,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: color.withOpacity(0.2)),
+  Widget _buildStatusBadge() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: DesignTokens.highlight.withOpacity(0.15),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: DesignTokens.highlight.withOpacity(0.3)),
+      ),
+      child: Text(
+        "ONLINE",
+        style: GoogleFonts.outfit(
+          fontSize: 8,
+          fontWeight: FontWeight.w900,
+          color: DesignTokens.highlight,
+          letterSpacing: 0.5,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFeaturedCard(String label, String title, IconData icon, Color color, VoidCallback onTap) {
+    return PremiumDashboardCard(
+      width: 200,
+      height: 120,
+      color: color,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Icon(icon, color: color, size: 28),
+                Icon(Icons.north_east_rounded, color: color.withOpacity(0.5), size: 16),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: GoogleFonts.outfit(
+                    color: color.withOpacity(0.7),
+                    fontSize: 10,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
                   ),
-                  child: Icon(icon, color: color, size: 18),
                 ),
-              ),
-              Opacity(
-                opacity: 0.2,
-                child: Icon(icon, color: color, size: 40),
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Text(
-            value,
-            style: GoogleFonts.outfit(
-              color: DesignTokens.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.w900,
-              letterSpacing: -0.5,
+                Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.outfit(
+                    color: DesignTokens.textPrimary,
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: GoogleFonts.outfit(
-              color: DesignTokens.textSecondary,
-              fontSize: 9,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 1.5,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildGridSection() {
-    final provider = Provider.of<HomeProvider>(context, listen: false);
+  Widget _buildMainGrid() {
     return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      padding: const EdgeInsets.fromLTRB(20, 24, 20, 0),
       sliver: SliverGrid(
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          mainAxisSpacing: 16,
-          crossAxisSpacing: 16,
-          childAspectRatio: 0.88,
+          mainAxisSpacing: 18,
+          crossAxisSpacing: 18,
+          childAspectRatio: 0.9,
         ),
         delegate: SliverChildListDelegate([
-          _buildMenuCard(
-            "Characters", 
-            "Operator Archive", 
-            Icons.person_pin_rounded, 
-            DesignTokens.primary,
-            () => _navigate(CharactersScreen(
-              appBarTitle: "Elite Characters", 
-              characters: provider.characters, 
-              isSquared: false
-            )),
-          ),
-          _buildMenuCard(
-            "Diamond Tips", 
-            "Pro Advisory", 
-            Icons.diamond_rounded, 
-            const Color(0xFF00FF9D),
-            () => _navigate(const DimondTips()),
-          ),
-          _buildMenuCard(
+          _buildMenuTile(
             "Rank System", 
             "Combat Stats", 
             Icons.trending_up_rounded, 
             DesignTokens.secondary,
             () => _navigate(SelectRankScreen(model: _defaultModel)),
           ),
-          _buildMenuCard(
-            "Nickname", 
+          _buildMenuTile(
             "ID Forge", 
+            "Nickname Tool", 
             Icons.badge_rounded, 
-            DesignTokens.accent,
+            DesignTokens.primary,
             () => _navigate(NickNameScreen(model: _defaultModel)),
           ),
-          _buildMenuCard(
-            "Ranked Check", 
+          _buildMenuTile(
+            "Vault Matrix", 
+            "Rare Bundles", 
+            Icons.auto_awesome_motion_rounded, 
+            DesignTokens.highlight,
+            () {
+              final provider = Provider.of<HomeProvider>(context, listen: false);
+              _navigate(CharactersScreen(
+                appBarTitle: "Legendary Bundles", 
+                characters: provider.bundles, 
+                isSquared: false
+              ));
+            },
+          ),
+          _buildMenuTile(
+            "Reward Center", 
+            "Claim Assets", 
+            Icons.card_giftcard_rounded, 
+            DesignTokens.warning,
+            () => _navigate(ClaimScreen(model: _defaultModel)),
+          ),
+          _buildMenuTile(
             "Performance", 
+            "Ranked Check", 
             Icons.analytics_rounded, 
-            const Color(0xFF7B2FFF),
+            DesignTokens.secondary,
             () => _navigate(RankedScreen(model: _defaultModel)),
           ),
-          _buildMenuCard(
-            "Rewards", 
-            "Claim Center", 
-            Icons.card_giftcard_rounded, 
-            const Color(0xFFFF9F1C),
-            () => _navigate(ClaimScreen(model: _defaultModel)),
+          _buildMenuTile(
+            "System Setup", 
+            "User Settings", 
+            Icons.settings_suggest_rounded, 
+            DesignTokens.primary,
+            () => _navigate(const SettingScreen()),
           ),
         ]),
       ),
     );
   }
 
-  Widget _buildMenuCard(String title, String sub, IconData icon, Color accentColor, VoidCallback onTap) {
-    return NeonCard(
+  Widget _buildMenuTile(String title, String sub, IconData icon, Color accentColor, VoidCallback onTap) {
+    return PremiumDashboardCard(
       onTap: onTap,
-      borderColor: accentColor.withOpacity(0.12),
-      padding: const EdgeInsets.all(18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              GlowContainer(
-                glowColor: accentColor,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: accentColor.withOpacity(0.2)),
+      color: accentColor,
+      child: Padding(
+        padding: const EdgeInsets.all(22),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            GlowContainer(
+              glowColor: accentColor,
+              blurRadius: 15,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(15),
+                  border: Border.all(color: accentColor.withOpacity(0.3), width: 1.5),
+                ),
+                child: Icon(icon, color: accentColor, size: 24),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: GoogleFonts.outfit(
+                    color: DesignTokens.textPrimary,
+                    fontSize: 15,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 0.2,
                   ),
-                  child: Icon(icon, color: accentColor, size: 22),
                 ),
-              ),
-              Icon(Icons.add_rounded, color: accentColor.withOpacity(0.3), size: 16),
-            ],
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.outfit(
-                  color: DesignTokens.textPrimary,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: -0.2,
+                const SizedBox(height: 4),
+                Text(
+                  sub.toUpperCase(),
+                  style: GoogleFonts.outfit(
+                    color: DesignTokens.textSecondary,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: 1,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                sub.toUpperCase(),
-                style: GoogleFonts.outfit(
-                  color: DesignTokens.textSecondary,
-                  fontSize: 8,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1,
-                ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -421,6 +529,7 @@ class _HomeScreenState extends State<HomeScreen> {
     Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
   }
 }
+
 
 
 

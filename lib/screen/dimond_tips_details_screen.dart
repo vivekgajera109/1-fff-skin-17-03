@@ -20,14 +20,13 @@ class DimondTipsDetalis extends StatelessWidget {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Background atmospheric elements
           _buildBackgroundElements(),
 
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
               CyberSliverAppBar(
-                title: "Strategy Intel",
+                title: "Strategy INTEL",
                 expandedHeight: 220,
                 accentColor: DesignTokens.secondary,
                 backgroundExtras: [
@@ -55,7 +54,6 @@ class DimondTipsDetalis extends StatelessWidget {
                       const SizedBox(height: 28),
                     ],
 
-                    // Meta Info
                     Row(
                       children: [
                         Container(
@@ -71,12 +69,12 @@ class DimondTipsDetalis extends StatelessWidget {
                               const Icon(Icons.security_rounded, color: DesignTokens.secondary, size: 14),
                               const SizedBox(width: 8),
                               Text(
-                                "ENCRYPTED ACCESS",
+                                "ENCRYPTED_ACCESS",
                                 style: GoogleFonts.outfit(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w900,
                                   color: DesignTokens.secondary,
-                                  letterSpacing: 2.0,
+                                  letterSpacing: 1.5,
                                 ),
                               ),
                             ],
@@ -84,63 +82,60 @@ class DimondTipsDetalis extends StatelessWidget {
                         ),
                         const Spacer(),
                         Text(
-                          "INTEL LVL 9.4",
+                          "INTEL_NODE: 0x9F4",
                           style: GoogleFonts.outfit(
                             fontSize: 10,
                             fontWeight: FontWeight.w900,
-                            color: DesignTokens.textSecondary.withOpacity(0.6),
-                            letterSpacing: 1.5,
+                            color: DesignTokens.textSecondary.withOpacity(0.4),
+                            letterSpacing: 1,
                           ),
                         ),
                       ],
                     ),
                     const SizedBox(height: 24),
 
-                    // Content Card
-                    NeonCard(
-                      padding: const EdgeInsets.all(32),
-                      borderColor: DesignTokens.secondary.withOpacity(0.2),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            item.title.toUpperCase(),
-                            style: GoogleFonts.outfit(
-                              fontSize: 28,
-                              fontWeight: FontWeight.w900,
-                              color: DesignTokens.textPrimary,
-                              height: 1.1,
-                              letterSpacing: -0.5,
-                            ),
-                          ),
-                          const SizedBox(height: 32),
-                          const GradientHeader(
-                            title: 'Tactical Analysis', 
-                            accentColor: DesignTokens.secondary,
-                            fontSize: 14,
-                          ),
-                          const SizedBox(height: 24),
-                          if (item.subTitle != null)
+                    PremiumDashboardCard(
+                      color: DesignTokens.secondary,
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
                             Text(
-                              item.subTitle!,
+                              item.title.toUpperCase(),
                               style: GoogleFonts.outfit(
-                                fontSize: 16,
-                                color: DesignTokens.textSecondary,
-                                height: 1.8,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            )
-                          else
-                            Text(
-                              "Strategic data packets currently being decrypted from secure orbital uplink. Initial bypass suggests high-value tactical advantages. Full transmission pending complete handshake protocol.",
-                              style: GoogleFonts.outfit(
-                                fontSize: 16,
-                                color: DesignTokens.textSecondary,
-                                height: 1.8,
-                                fontWeight: FontWeight.w400,
+                                fontSize: 26,
+                                fontWeight: FontWeight.w900,
+                                color: DesignTokens.textPrimary,
+                                height: 1.1,
                               ),
                             ),
-                        ],
+                            const SizedBox(height: 32),
+                            const GradientHeader(
+                              title: 'TACTICAL_ANALYSIS', 
+                              fontSize: 14,
+                            ),
+                            const SizedBox(height: 24),
+                            if (item.subTitle != null)
+                              Text(
+                                item.subTitle!,
+                                style: GoogleFonts.outfit(
+                                  fontSize: 15,
+                                  color: DesignTokens.textSecondary,
+                                  height: 1.7,
+                                ),
+                              )
+                            else
+                              Text(
+                                "Strategic data packets currently being decrypted from secure orbital uplink. Initial bypass suggests high-value tactical advantages. Full transmission pending complete handshake protocol.",
+                                style: GoogleFonts.outfit(
+                                  fontSize: 15,
+                                  color: DesignTokens.textSecondary,
+                                  height: 1.7,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -151,11 +146,9 @@ class DimondTipsDetalis extends StatelessWidget {
                     
                     const SizedBox(height: 48),
                     
-                    GradientButton(
+                    CyberButton(
                       text: 'ACKNOWLEDGE INTEL',
-                      icon: Icons.check_circle_outline_rounded,
                       onPressed: () => Navigator.pop(context),
-                      color: DesignTokens.secondary,
                     ),
                     
                     const SizedBox(height: 120),

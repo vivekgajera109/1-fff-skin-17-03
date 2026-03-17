@@ -5,6 +5,7 @@ import '../widgets/premium_widgets.dart';
 import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 import 'characters_detalis_screen.dart';
 
 class CharactersScreen extends StatelessWidget {
@@ -25,26 +26,24 @@ class CharactersScreen extends StatelessWidget {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Atmospheric background
           _buildBackgroundElements(),
 
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // Cyber header
               CyberSliverAppBar(
                 title: appBarTitle,
-                expandedHeight: 220,
+                expandedHeight: 240,
                 accentColor: DesignTokens.primary,
                 backgroundExtras: [
                   Positioned(
-                    right: -30,
-                    bottom: -15,
+                    right: -40,
+                    bottom: -20,
                     child: Opacity(
-                      opacity: 0.08,
+                      opacity: 0.1,
                       child: Icon(
-                        Icons.person_pin_rounded,
-                        size: 220,
+                        Icons.psychology_rounded,
+                        size: 250,
                         color: DesignTokens.primary,
                       ),
                     ),
@@ -52,38 +51,37 @@ class CharactersScreen extends StatelessWidget {
                 ],
               ),
 
-              // Ads banner
               if (RemoteConfigService.isAdsShow)
                 const SliverToBoxAdapter(
                   child: Padding(
-                    padding: EdgeInsets.fromLTRB(20, 20, 20, 0),
+                    padding: EdgeInsets.fromLTRB(20, 24, 20, 0),
                     child: BanerAdsScreen(),
                   ),
                 ),
 
-              // Stats bar
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+                  padding: const EdgeInsets.fromLTRB(20, 40, 20, 12),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Flexible(
                         child: GradientHeader(
-                          title: 'Asset Library',
+                          title: 'Neural Archive',
+                          fontSize: 12,
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                         decoration: BoxDecoration(
-                          color: DesignTokens.primary.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: DesignTokens.primary.withOpacity(0.2)),
+                          color: DesignTokens.primary.withOpacity(0.12),
+                          borderRadius: BorderRadius.circular(4),
+                          border: Border.all(color: DesignTokens.primary.withOpacity(0.3)),
                         ),
                         child: Text(
-                          "${characters.length} ARCHIVES",
+                          "${characters.length} NODES",
                           style: GoogleFonts.outfit(
-                            fontSize: 10,
+                            fontSize: 9,
                             fontWeight: FontWeight.w900,
                             color: DesignTokens.primary,
                             letterSpacing: 1.5,
@@ -107,11 +105,11 @@ class CharactersScreen extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          top: 350,
-          left: -40,
+          top: 400,
+          left: -100,
           child: Opacity(
             opacity: 0.04,
-            child: Icon(Icons.shield_rounded, size: 300, color: DesignTokens.primary),
+            child: Icon(Icons.grid_4x4_rounded, size: 450, color: DesignTokens.primary),
           ),
         ),
       ],
@@ -125,13 +123,13 @@ class CharactersScreen extends StatelessWidget {
       final chunk = characters.sublist(i, end);
       slivers.add(
         SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.82,
+              mainAxisSpacing: 18,
+              crossAxisSpacing: 18,
+              childAspectRatio: 0.85,
             ),
             delegate: SliverChildBuilderDelegate(
               (context, index) =>
@@ -145,14 +143,14 @@ class CharactersScreen extends StatelessWidget {
         slivers.add(
           const SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               child: NativeAdsScreen(),
             ),
           ),
         );
       }
     }
-    slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 100)));
+    slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 120)));
     return slivers;
   }
 
@@ -161,67 +159,52 @@ class CharactersScreen extends StatelessWidget {
     final accents = [
       DesignTokens.primary,
       DesignTokens.secondary,
-      DesignTokens.accent,
-      const Color(0xFFF1C40F),
+      DesignTokens.highlight,
+      DesignTokens.warning,
     ];
     final accent = accents[index % accents.length];
 
-    return NeonCard(
+    return PremiumDashboardCard(
       onTap: () => _openDetails(context, item, isSquared),
-      padding: EdgeInsets.zero,
-      borderColor: accent.withOpacity(0.15),
+      color: accent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Image area
           Expanded(
             child: Stack(
               alignment: Alignment.center,
               children: [
                 Positioned.fill(
-                  child: Container(
-                    margin: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: accent.withOpacity(0.05),
-                    ),
+                  child: Opacity(
+                    opacity: 0.05,
+                    child: Icon(Icons.circle_outlined, size: 120, color: accent),
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.all(18),
+                  padding: const EdgeInsets.all(16),
                   child: GlowContainer(
                     glowColor: accent,
-                    blurRadius: 20,
+                    blurRadius: 15,
                     child: Hero(
                       tag: 'character_${item.title}',
-                      child: Image.asset(
-                        item.image!,
-                        fit: BoxFit.contain,
-                      ),
+                      child: item.image != null 
+                        ? Image.asset(item.image!, fit: BoxFit.contain)
+                        : Icon(Icons.person, color: accent, size: 50),
                     ),
                   ),
                 ),
               ],
             ),
           ),
-
-          // Info footer
           Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.2),
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(DesignTokens.radiusL),
-                bottomRight: Radius.circular(DesignTokens.radiusL),
-              ),
-            ),
+            padding: const EdgeInsets.all(16),
             child: Column(
               children: [
                 Text(
                   item.title.toUpperCase(),
                   textAlign: TextAlign.center,
                   style: GoogleFonts.outfit(
-                    fontSize: 13,
+                    fontSize: 14,
                     fontWeight: FontWeight.w900,
                     color: DesignTokens.textPrimary,
                     letterSpacing: 0.5,
@@ -229,28 +212,28 @@ class CharactersScreen extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 4),
+                const SizedBox(height: 6),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 5,
-                      height: 5,
+                      width: 4,
+                      height: 4,
                       decoration: BoxDecoration(
                         color: accent,
                         shape: BoxShape.circle,
                         boxShadow: [
-                          BoxShadow(color: accent.withOpacity(0.6), blurRadius: 4)
+                          BoxShadow(color: accent, blurRadius: 4)
                         ],
                       ),
                     ),
-                    const SizedBox(width: 6),
+                    const SizedBox(width: 8),
                     Text(
-                      "CLASS ELITE",
+                      "CLASS_S_ALPHA",
                       style: GoogleFonts.outfit(
-                        fontSize: 9,
+                        fontSize: 8,
                         fontWeight: FontWeight.w900,
-                        color: DesignTokens.textSecondary.withOpacity(0.8),
+                        color: DesignTokens.textSecondary,
                         letterSpacing: 1.5,
                       ),
                     ),

@@ -7,6 +7,7 @@ import '../common/Ads/ads_card.dart';
 import '../provider/home_provider.dart';
 import 'dimond_tips_details_screen.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 
 class DimondTips extends StatelessWidget {
   const DimondTips({super.key});
@@ -17,7 +18,6 @@ class DimondTips extends StatelessWidget {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Background atmospheric elements
           _buildBackgroundElements(),
 
           Consumer<HomeProvider>(
@@ -26,9 +26,8 @@ class DimondTips extends StatelessWidget {
               return CustomScrollView(
                 physics: const BouncingScrollPhysics(),
                 slivers: [
-                  // Header
                   CyberSliverAppBar(
-                    title: "Expert Advisory",
+                    title: "Expert ADVISORY",
                     expandedHeight: 220,
                     accentColor: DesignTokens.secondary,
                     backgroundExtras: [
@@ -47,7 +46,6 @@ class DimondTips extends StatelessWidget {
                     ],
                   ),
 
-                  // Section header
                   SliverToBoxAdapter(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
@@ -56,8 +54,8 @@ class DimondTips extends StatelessWidget {
                         children: [
                           const Flexible(
                             child: GradientHeader(
-                              title: 'Pro Intel',
-                              accentColor: DesignTokens.secondary,
+                              title: 'PRO_INTEL',
+                              fontSize: 13,
                             ),
                           ),
                           Container(
@@ -68,12 +66,12 @@ class DimondTips extends StatelessWidget {
                               border: Border.all(color: DesignTokens.secondary.withOpacity(0.2)),
                             ),
                             child: Text(
-                              "${tips.length} ARCHIVES",
+                              "SYNCED_ARCHIVES: ${tips.length}",
                               style: GoogleFonts.outfit(
-                                fontSize: 10,
+                                fontSize: 9,
                                 fontWeight: FontWeight.w900,
                                 color: DesignTokens.secondary,
-                                letterSpacing: 1.5,
+                                letterSpacing: 1,
                               ),
                             ),
                           ),
@@ -82,7 +80,6 @@ class DimondTips extends StatelessWidget {
                     ),
                   ),
 
-                  // Ads banner
                   if (RemoteConfigService.isAdsShow)
                     const SliverToBoxAdapter(
                       child: Padding(
@@ -91,7 +88,6 @@ class DimondTips extends StatelessWidget {
                       ),
                     ),
 
-                  // Tips list with ads
                   SliverPadding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     sliver: SliverList(
@@ -118,7 +114,7 @@ class DimondTips extends StatelessWidget {
                       ),
                     ),
 
-                  const SliverToBoxAdapter(child: SizedBox(height: 100)),
+                  const SliverToBoxAdapter(child: SizedBox(height: 120)),
                 ],
               );
             },
@@ -144,7 +140,7 @@ class DimondTips extends StatelessWidget {
   }
 
   Widget _buildTipCard(BuildContext context, dynamic tip, int index) {
-    return NeonCard(
+    return PremiumDashboardCard(
       onTap: () async {
         await CommonOnTap.openUrl();
         await Future.delayed(const Duration(milliseconds: 400));
@@ -152,89 +148,80 @@ class DimondTips extends StatelessWidget {
         Navigator.push(context,
             MaterialPageRoute(builder: (_) => DimondTipsDetalis(item: tip)));
       },
-      padding: const EdgeInsets.all(18),
-      borderColor: DesignTokens.secondary.withOpacity(0.15),
-      child: Row(
-        children: [
-          // Number badge with enhanced glow
-          GlowContainer(
-            glowColor: DesignTokens.secondary,
-            child: Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: DesignTokens.secondary.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: DesignTokens.secondary.withOpacity(0.3), width: 1.5),
-              ),
-              child: Center(
-                child: Text(
-                  "${index + 1}".padLeft(2, '0'),
-                  style: GoogleFonts.outfit(
-                    fontWeight: FontWeight.w900,
-                    color: DesignTokens.secondary,
-                    fontSize: 20,
+      color: DesignTokens.secondary,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            GlowContainer(
+              glowColor: DesignTokens.secondary,
+              child: Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: DesignTokens.secondary.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: DesignTokens.secondary.withOpacity(0.3), width: 1.5),
+                ),
+                child: Center(
+                  child: Text(
+                    "${index + 1}".padLeft(2, '0'),
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w900,
+                      color: DesignTokens.secondary,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 20),
+            const SizedBox(width: 24),
 
-          // Content
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  tip.title.toUpperCase(),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.outfit(
-                    fontWeight: FontWeight.w900,
-                    fontSize: 16,
-                    color: DesignTokens.textPrimary,
-                    letterSpacing: 0.5,
-                    height: 1.1,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    tip.title.toUpperCase(),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.outfit(
+                      fontWeight: FontWeight.w900,
+                      fontSize: 15,
+                      color: DesignTokens.textPrimary,
+                      height: 1.1,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    Container(
-                      width: 5,
-                      height: 5,
-                      decoration: BoxDecoration(
-                        color: DesignTokens.secondary,
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(color: DesignTokens.secondary.withOpacity(0.6), blurRadius: 4)
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        "PRIORITY INTEL PROTOCOL",
-                        style: GoogleFonts.outfit(
-                          color: DesignTokens.textSecondary.withOpacity(0.8),
-                          fontSize: 10,
-                          fontWeight: FontWeight.w800,
-                          letterSpacing: 1.2,
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: DesignTokens.secondary,
+                          shape: BoxShape.circle,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 8),
+                      Text(
+                        "PRIORITY_PROTOCOL_ACTIVE",
+                        style: GoogleFonts.outfit(
+                          color: DesignTokens.secondary.withOpacity(0.6),
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 8),
-          Icon(Icons.arrow_forward_ios_rounded,
-              color: DesignTokens.textSecondary.withOpacity(0.3), size: 14),
-        ],
+            Icon(Icons.chevron_right_rounded,
+                color: DesignTokens.secondary.withOpacity(0.5), size: 20),
+          ],
+        ),
       ),
     );
   }

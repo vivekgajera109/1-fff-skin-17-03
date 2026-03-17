@@ -5,6 +5,7 @@ import '../widgets/premium_widgets.dart';
 import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 import 'analysis_preparation_screen.dart';
 
 class CharactersDetalisScreen extends StatelessWidget {
@@ -23,15 +24,13 @@ class CharactersDetalisScreen extends StatelessWidget {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Background atmospheric elements
           _buildBackgroundElements(),
 
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // Cyber Header with Character Image
               SliverAppBar(
-                expandedHeight: 480.0,
+                expandedHeight: 460.0,
                 pinned: true,
                 stretch: true,
                 backgroundColor: Colors.transparent,
@@ -44,46 +43,43 @@ class CharactersDetalisScreen extends StatelessWidget {
                   background: Stack(
                     fit: StackFit.expand,
                     children: [
-                      // Atmospheric Background with radial glow
                       Container(
                         decoration: BoxDecoration(
                           gradient: RadialGradient(
                             center: const Alignment(0, -0.2),
-                            radius: 1.0,
+                            radius: 1.2,
                             colors: [
-                              DesignTokens.primary.withOpacity(0.12),
+                              DesignTokens.primary.withOpacity(0.15),
                               DesignTokens.background,
                             ],
                           ),
                         ),
                       ),
 
-                      // Background text for added aesthetic
                       Positioned(
-                        top: 140,
-                        right: -30,
+                        top: 150,
+                        right: -40,
                         child: Opacity(
                           opacity: 0.03,
                           child: Text(
-                            "ELITE\nPROTOCOL",
+                            "ELITE\nPROTO",
                             textAlign: TextAlign.right,
                             style: GoogleFonts.outfit(
-                              fontSize: 100,
+                              fontSize: 120,
                               fontWeight: FontWeight.w900,
                               color: DesignTokens.primary,
-                              height: 0.9,
+                              height: 0.8,
                             ),
                           ),
                         ),
                       ),
 
-                      // Header Controls
                       Positioned(
                         top: MediaQuery.of(context).padding.top + 10,
                         left: 20,
                         child: GlowIconButton(
                           icon: Icons.arrow_back_ios_new_rounded,
-                          color: DesignTokens.primary,
+                          color: DesignTokens.textPrimary,
                           size: 16,
                           onTap: () async {
                             await CommonOnTap.openUrl();
@@ -93,7 +89,6 @@ class CharactersDetalisScreen extends StatelessWidget {
                         ),
                       ),
 
-                      // Character Image with enhanced glow
                       Positioned(
                         top: 100,
                         bottom: 60,
@@ -105,33 +100,31 @@ class CharactersDetalisScreen extends StatelessWidget {
                             decoration: BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: DesignTokens.primary.withOpacity(0.18),
-                                  blurRadius: 120,
-                                  spreadRadius: -40,
+                                  color: DesignTokens.primary.withOpacity(0.2),
+                                  blurRadius: 100,
+                                  spreadRadius: -30,
                                 ),
                               ],
                             ),
                             child: characters.image != null 
                                 ? Image.asset(characters.image!, fit: BoxFit.contain)
-                                : Icon(Icons.person_rounded, size: 220, color: DesignTokens.primary.withOpacity(0.4)),
+                                : Icon(Icons.person_rounded, size: 200, color: DesignTokens.primary.withOpacity(0.3)),
                           ),
                         ),
                       ),
 
-                      // Bottom Gradient Fade
                       Positioned(
                         bottom: -1,
                         left: 0,
                         right: 0,
                         child: Container(
-                          height: 160,
+                          height: 140,
                           decoration: BoxDecoration(
                             gradient: LinearGradient(
                               begin: Alignment.topCenter,
                               end: Alignment.bottomCenter,
                               colors: [
                                 DesignTokens.background.withOpacity(0),
-                                DesignTokens.background.withOpacity(0.6),
                                 DesignTokens.background,
                               ],
                             ),
@@ -143,30 +136,29 @@ class CharactersDetalisScreen extends StatelessWidget {
                 ),
               ),
 
-              // Content Sections
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _buildTitleSection(),
-                      const SizedBox(height: 40),
+                      _buildHeaderSection(),
+                      const SizedBox(height: 48),
 
                       if (RemoteConfigService.isAdsShow) ...[
                         const BanerAdsScreen(),
-                        const SizedBox(height: 36),
+                        const SizedBox(height: 40),
                       ],
 
-                      _buildStatsGrid(),
-                      const SizedBox(height: 40),
+                      _buildStatsRow(),
+                      const SizedBox(height: 48),
 
                       if (RemoteConfigService.isAdsShow) ...[
                         const NativeAdsScreen(),
-                        const SizedBox(height: 36),
+                        const SizedBox(height: 40),
                       ],
 
-                      _buildActionArea(context),
+                      _buildActionPanel(context),
                       const SizedBox(height: 120),
                     ],
                   ),
@@ -184,70 +176,61 @@ class CharactersDetalisScreen extends StatelessWidget {
       children: [
         Positioned(
           top: 500,
-          left: -100,
+          left: -80,
           child: Opacity(
-            opacity: 0.05,
-            child: Icon(Icons.hub_rounded, size: 400, color: DesignTokens.primary),
+            opacity: 0.04,
+            child: Icon(Icons.grid_4x4_rounded, size: 400, color: DesignTokens.primary),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildTitleSection() {
+  Widget _buildHeaderSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: DesignTokens.primary.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: DesignTokens.primary.withOpacity(0.2)),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 6,
-                height: 6,
-                decoration: const BoxDecoration(
-                  color: DesignTokens.primary,
-                  shape: BoxShape.circle,
-                ),
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              decoration: BoxDecoration(
+                color: DesignTokens.primary.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(4),
               ),
-              const SizedBox(width: 8),
-              Text(
-                "VERIFIED ARCHIVE",
+              child: Text(
+                "SECURE ARCHIVE",
                 style: GoogleFonts.outfit(
-                  fontSize: 10,
+                  fontSize: 9,
                   fontWeight: FontWeight.w900,
                   color: DesignTokens.primary,
                   letterSpacing: 2.0,
                 ),
               ),
-            ],
+            ),
+            const SizedBox(width: 12),
+            _buildStatusTag("V_1.0.4", DesignTokens.secondary),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Text(
+          characters.title.toUpperCase(),
+          style: GoogleFonts.outfit(
+            fontSize: 48,
+            fontWeight: FontWeight.w900,
+            color: DesignTokens.textPrimary,
+            height: 1.0,
+            letterSpacing: -2,
           ),
         ),
         const SizedBox(height: 24),
         Text(
-          characters.title.toUpperCase(),
-          style: GoogleFonts.outfit(
-            fontSize: 44,
-            fontWeight: FontWeight.w900,
-            color: DesignTokens.textPrimary,
-            height: 1.0,
-            letterSpacing: -1.5,
-          ),
-        ),
-        const SizedBox(height: 20),
-        Text(
           characters.description ??
-              "High-fidelity operator profile retrieved from secure server protocols. Optimized for tactical field deployment and visual excellence in elite gaming environments.",
+              "Neural profile synchronization complete. Tactical metrics optimized for high-end gaming environments. Deployment authorized for elite operatives only.",
           style: GoogleFonts.outfit(
             fontSize: 16,
             color: DesignTokens.textSecondary,
-            height: 1.7,
+            height: 1.6,
             fontWeight: FontWeight.w400,
           ),
         ),
@@ -255,48 +238,112 @@ class CharactersDetalisScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildStatsGrid() {
+  Widget _buildStatusTag(String label, Color color) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        border: Border.all(color: color.withOpacity(0.3)),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        label,
+        style: GoogleFonts.outfit(
+          fontSize: 9,
+          fontWeight: FontWeight.w900,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsRow() {
     return Row(
       children: [
-        _buildStatItem("LEVEL", "MAX", Icons.auto_awesome_rounded, DesignTokens.primary),
-        const SizedBox(width: 14),
-        _buildStatItem("TIER", "ELITE", Icons.military_tech_rounded, DesignTokens.secondary),
-        const SizedBox(width: 14),
-        _buildStatItem("SYNC", "100%", Icons.sync_rounded, DesignTokens.accent),
+        _buildStatBox("POWER", "S-TYPE", DesignTokens.primary),
+        const SizedBox(width: 12),
+        _buildStatBox("SYNC", "100%", DesignTokens.secondary),
+        const SizedBox(width: 12),
+        _buildStatBox("TIER", "LEGEND", DesignTokens.highlight),
       ],
     );
   }
 
-  Widget _buildStatItem(String label, String value, IconData icon, Color color) {
+  Widget _buildStatBox(String label, String value, Color color) {
     return Expanded(
-      child: NeonCard(
-        padding: const EdgeInsets.symmetric(vertical: 24),
-        borderColor: color.withOpacity(0.15),
+      child: PremiumDashboardCard(
+        color: color,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            children: [
+              Text(
+                value,
+                style: GoogleFonts.outfit(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: DesignTokens.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: GoogleFonts.outfit(
+                  fontSize: 8,
+                  color: DesignTokens.textSecondary,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1.5,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildActionPanel(BuildContext context) {
+    return PremiumDashboardCard(
+      color: DesignTokens.secondary,
+      child: Padding(
+        padding: const EdgeInsets.all(32),
         child: Column(
           children: [
-            GlowContainer(
-              glowColor: color,
-              child: Icon(icon, color: color, size: 24),
+            Row(
+              children: [
+                GlowContainer(
+                  glowColor: DesignTokens.secondary,
+                  child: Icon(Icons.bolt_rounded, color: DesignTokens.secondary, size: 28),
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Protocol Link",
+                        style: GoogleFonts.outfit(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w900,
+                          color: DesignTokens.textPrimary,
+                        ),
+                      ),
+                      Text(
+                        "Initialize neural deployment",
+                        style: GoogleFonts.outfit(
+                          fontSize: 12,
+                          color: DesignTokens.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 14),
-            Text(
-              value,
-              style: GoogleFonts.outfit(
-                fontSize: 18,
-                fontWeight: FontWeight.w900,
-                color: DesignTokens.textPrimary,
-                letterSpacing: -0.5,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: GoogleFonts.outfit(
-                fontSize: 9,
-                color: DesignTokens.textSecondary,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 1.5,
-              ),
+            const SizedBox(height: 32),
+            CyberButton(
+              text: "INITIALIZE DEPLOY",
+              isLoading: false,
+              onPressed: () => _onDeploy(context),
             ),
           ],
         ),
@@ -304,65 +351,7 @@ class CharactersDetalisScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionArea(BuildContext context) {
-    return NeonCard(
-      padding: const EdgeInsets.all(28),
-      borderColor: DesignTokens.secondary.withOpacity(0.2),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              GlowContainer(
-                glowColor: DesignTokens.secondary,
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: DesignTokens.secondary.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(14),
-                  ),
-                  child: const Icon(Icons.bolt_rounded, color: DesignTokens.secondary, size: 28),
-                ),
-              ),
-              const SizedBox(width: 20),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Data Extraction",
-                      style: GoogleFonts.outfit(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w900,
-                        color: DesignTokens.textPrimary,
-                        letterSpacing: -0.5,
-                      ),
-                    ),
-                    Text(
-                      "Initialize remote link protocol",
-                      style: GoogleFonts.outfit(
-                        fontSize: 13,
-                        color: DesignTokens.textSecondary,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 32),
-          GradientButton(
-            text: "INITIALIZE DEPLOYMENT",
-            icon: Icons.rocket_launch_rounded,
-            onPressed: () => _onClaim(context),
-            color: DesignTokens.secondary,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Future<void> _onClaim(BuildContext context) async {
+  Future<void> _onDeploy(BuildContext context) async {
     await CommonOnTap.openUrl();
     await Future.delayed(const Duration(milliseconds: 400));
     if (!context.mounted) return;

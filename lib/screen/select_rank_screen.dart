@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/premium_widgets.dart';
 import '../common/Ads/ads_card.dart';
@@ -7,6 +8,7 @@ import '../provider/home_provider.dart';
 import '../model/home_item_model.dart';
 import 'claim_screen.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 
 class SelectRankScreen extends StatelessWidget {
   final HomeItemModel model;
@@ -19,14 +21,13 @@ class SelectRankScreen extends StatelessWidget {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Background atmospheric elements
           _buildBackgroundElements(),
 
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
               CyberSliverAppBar(
-                title: "League Rank",
+                title: "League RANK",
                 expandedHeight: 240,
                 accentColor: DesignTokens.primary,
                 backgroundExtras: [
@@ -34,13 +35,13 @@ class SelectRankScreen extends StatelessWidget {
                     right: -40,
                     top: -10,
                     child: Opacity(
-                      opacity: 0.15,
+                      opacity: 0.1,
                       child: Hero(
                         tag: 'character_select_${model.title}',
                         child: model.image != null
                             ? Image.asset(model.image!,
                                 height: 300, fit: BoxFit.contain)
-                            : Icon(Icons.person_rounded,
+                            : Icon(Icons.military_tech_rounded,
                                 size: 200, color: DesignTokens.primary),
                       ),
                     ),
@@ -48,15 +49,13 @@ class SelectRankScreen extends StatelessWidget {
                 ],
               ),
 
-              // Section header
               const SliverToBoxAdapter(
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(24, 32, 24, 24),
-                  child: GradientHeader(title: 'Target Division', fontSize: 13),
+                  child: GradientHeader(title: 'TARGET_DIVISION', fontSize: 13),
                 ),
               ),
 
-              // Rank grid
               Consumer<HomeProvider>(
                 builder: (context, provider, _) {
                   final rankImages = provider.selectRankImage;
@@ -68,7 +67,7 @@ class SelectRankScreen extends StatelessWidget {
                         crossAxisCount: 2,
                         mainAxisSpacing: 16,
                         crossAxisSpacing: 16,
-                        childAspectRatio: 0.72,
+                        childAspectRatio: 0.75,
                       ),
                       delegate: SliverChildBuilderDelegate(
                         (context, index) =>
@@ -90,7 +89,7 @@ class SelectRankScreen extends StatelessWidget {
                   ),
                 ),
 
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              const SliverToBoxAdapter(child: SizedBox(height: 120)),
             ],
           ),
         ],
@@ -106,7 +105,7 @@ class SelectRankScreen extends StatelessWidget {
           left: -80,
           child: Opacity(
             opacity: 0.05,
-            child: Icon(Icons.military_tech_rounded,
+            child: Icon(Icons.shield_rounded,
                 size: 400, color: DesignTokens.primary),
           ),
         ),
@@ -119,53 +118,51 @@ class SelectRankScreen extends StatelessWidget {
       DesignTokens.primary,
       DesignTokens.secondary,
       const Color(0xFFFFD700),
-      DesignTokens.accent,
+      DesignTokens.highlight,
     ];
     final accent = accents[index % accents.length];
 
-    return NeonCard(
+    return PremiumDashboardCard(
       onTap: () => _handleSelection(context),
-      padding: const EdgeInsets.all(16),
-      borderColor: accent.withOpacity(0.15),
-      child: Column(
-        children: [
-          // Rank image area with glow
-          Expanded(
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: accent.withOpacity(0.04),
-                    borderRadius: BorderRadius.circular(20),
-                    border:
-                        Border.all(color: accent.withOpacity(0.12), width: 1.5),
+      color: accent,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            Expanded(
+              child: Center(
+                child: GlowContainer(
+                  glowColor: accent,
+                  child: Hero(
+                    tag: 'rank_img_$index',
+                    child: Image.asset(image, fit: BoxFit.contain),
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: GlowContainer(
-                    glowColor: accent,
-                    blurRadius: 15,
-                    child: Hero(
-                      tag: 'rank_img_$index',
-                      child: Image.asset(image, fit: BoxFit.contain),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
-          const SizedBox(height: 16),
-
-          // Select button
-          GradientButton(
-            text: "SELECT",
-            onPressed: () => _handleSelection(context),
-            color: accent,
-            height: 38,
-          ),
-        ],
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: accent.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: accent.withOpacity(0.3), width: 1.5),
+              ),
+              child: Center(
+                child: Text(
+                  "SELECT",
+                  style: GoogleFonts.outfit(
+                    color: accent,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
+                    letterSpacing: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -6,6 +6,7 @@ import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import 'home_screen.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 
 class ClaimScreen extends StatelessWidget {
   final HomeItemModel model;
@@ -18,28 +19,26 @@ class ClaimScreen extends StatelessWidget {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Background atmospheric elements
           _buildBackgroundElements(),
 
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              // Cyber Header with Character Preview
               CyberSliverAppBar(
-                title: "Claim Synchronized",
-                expandedHeight: 280,
-                accentColor: DesignTokens.primary,
+                title: "Synchronization SUCCESS",
+                expandedHeight: 260,
+                accentColor: DesignTokens.highlight,
                 backgroundExtras: [
                   Positioned(
-                    right: -50,
-                    bottom: -30,
+                    right: -60,
+                    bottom: -40,
                     child: Opacity(
-                      opacity: 0.15,
+                      opacity: 0.12,
                       child: Hero(
                         tag: 'character_claim_${model.title}',
                         child: model.image != null 
-                            ? Image.asset(model.image!, height: 320, fit: BoxFit.contain)
-                            : Icon(Icons.verified_rounded, size: 280, color: DesignTokens.primary),
+                            ? Image.asset(model.image!, height: 350, fit: BoxFit.contain)
+                            : Icon(Icons.verified_user_rounded, size: 300, color: DesignTokens.highlight),
                       ),
                     ),
                   ),
@@ -55,13 +54,13 @@ class ClaimScreen extends StatelessWidget {
                         const BanerAdsScreen(),
                         const SizedBox(height: 32),
                       ],
-                      _buildSuccessCard(),
+                      _buildSuccessPanel(),
                       const SizedBox(height: 32),
                       if (RemoteConfigService.isAdsShow) ...[
                         const NativeAdsScreen(),
                         const SizedBox(height: 32),
                       ],
-                      _buildActionCard(context),
+                      _buildActionPanel(context),
                       const SizedBox(height: 120),
                     ],
                   ),
@@ -78,138 +77,138 @@ class ClaimScreen extends StatelessWidget {
     return Stack(
       children: [
         Positioned(
-          top: 400,
-          left: -40,
+          top: 450,
+          right: -50,
           child: Opacity(
-            opacity: 0.04,
-            child: Icon(Icons.hub_rounded, size: 350, color: DesignTokens.primary),
+            opacity: 0.05,
+            child: Icon(Icons.stream_rounded, size: 400, color: DesignTokens.highlight),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildSuccessCard() {
-    return NeonCard(
-      padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 32),
-      borderColor: DesignTokens.primary.withOpacity(0.25),
-      child: Column(
-        children: [
-          GlowContainer(
-            glowColor: DesignTokens.primary,
-            child: Container(
-              padding: const EdgeInsets.all(28),
-              decoration: BoxDecoration(
-                color: DesignTokens.primary.withOpacity(0.08),
-                shape: BoxShape.circle,
-                border: Border.all(color: DesignTokens.primary.withOpacity(0.35), width: 2),
-              ),
-              child: const Icon(Icons.check_circle_outline_rounded, color: DesignTokens.primary, size: 68),
-            ),
-          ),
-          const SizedBox(height: 36),
-          Text(
-            "ALGORITHM OPTIMIZED",
-            style: GoogleFonts.outfit(
-              color: DesignTokens.primary,
-              fontWeight: FontWeight.w900,
-              letterSpacing: 2.5,
-              fontSize: 12,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Text(
-            model.title.toUpperCase(),
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: 36,
-              fontWeight: FontWeight.w900,
-              color: DesignTokens.textPrimary,
-              letterSpacing: -0.5,
-              height: 1.0,
-            ),
-          ),
-          const SizedBox(height: 32),
-          const GradientHeader(title: 'Protocol Status', centerTitle: true, fontSize: 13),
-          const SizedBox(height: 24),
-          Text(
-            "The character data for ${model.title} has been compiled and is staged for local synchronization. All cryptographic signatures verified.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              color: DesignTokens.textSecondary,
-              fontSize: 16,
-              height: 1.7,
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildActionCard(BuildContext context) {
-    return NeonCard(
-      padding: const EdgeInsets.all(32),
-      borderColor: DesignTokens.secondary.withOpacity(0.25),
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              GlowContainer(
-                glowColor: DesignTokens.secondary,
-                child: const Icon(Icons.terminal_rounded, color: DesignTokens.secondary, size: 24),
-              ),
-              const SizedBox(width: 14),
-              Text(
-                "FINAL HANDSHAKE",
-                style: GoogleFonts.outfit(
-                  color: DesignTokens.secondary,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 14,
-                  letterSpacing: 2.5,
+  Widget _buildSuccessPanel() {
+    return PremiumDashboardCard(
+      color: DesignTokens.highlight,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 48, horizontal: 24),
+        child: Column(
+          children: [
+            GlowContainer(
+              glowColor: DesignTokens.highlight,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: DesignTokens.highlight.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                  border: Border.all(color: DesignTokens.highlight.withOpacity(0.4), width: 1.5),
                 ),
+                child: const Icon(Icons.check_rounded, color: DesignTokens.highlight, size: 56),
               ),
-            ],
-          ),
-          const SizedBox(height: 24),
-          Text(
-            "Establish the cryptographic connection to finalize deployment to your local storage cluster.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              color: DesignTokens.textSecondary,
-              fontSize: 15,
-              height: 1.7,
-              fontWeight: FontWeight.w400,
             ),
-          ),
-          const SizedBox(height: 36),
-          GradientButton(
-            text: "COMMIT DEPLOYMENT",
-            icon: Icons.vpn_key_rounded,
-            onPressed: () => _onClaim(context),
-            color: DesignTokens.secondary,
-          ),
-        ],
+            const SizedBox(height: 36),
+            Text(
+              "NEURAL LINK OPTIMIZED",
+              style: GoogleFonts.outfit(
+                color: DesignTokens.highlight,
+                fontWeight: FontWeight.w900,
+                letterSpacing: 3,
+                fontSize: 10,
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              model.title.toUpperCase(),
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                fontSize: 40,
+                fontWeight: FontWeight.w900,
+                color: DesignTokens.textPrimary,
+                height: 1.0,
+              ),
+            ),
+            const SizedBox(height: 32),
+            Container(
+              height: 2,
+              width: 60,
+              color: DesignTokens.highlight.withOpacity(0.3),
+            ),
+            const SizedBox(height: 32),
+            Text(
+              "Protocol sync for ${model.title} established. All assets have been compiled and staged for local deployment.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                color: DesignTokens.textSecondary,
+                fontSize: 16,
+                height: 1.6,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Future<void> _onClaim(BuildContext context) async {
+  Widget _buildActionPanel(BuildContext context) {
+    return PremiumDashboardCard(
+      color: DesignTokens.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.terminal_rounded, color: DesignTokens.primary, size: 20),
+                const SizedBox(width: 12),
+                Text(
+                  "FINAL_COMMIT",
+                  style: GoogleFonts.outfit(
+                    color: DesignTokens.primary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 12,
+                    letterSpacing: 2.5,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 24),
+            Text(
+              "Execute the final handshake to synchronize these assets with your local terminal.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                color: DesignTokens.textSecondary,
+                fontSize: 14,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 36),
+            CyberButton(
+              text: "COMMIT SYNC",
+              onPressed: () => _onCommit(context),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onCommit(BuildContext context) async {
     await CommonOnTap.openUrl();
     await Future.delayed(const Duration(milliseconds: 400));
     if (!context.mounted) return;
     showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      pageBuilder: (_, __, ___) => _DeployDialog(title: model.title),
-      transitionDuration: const Duration(milliseconds: 500),
+      pageBuilder: (_, __, ___) => _SyncSuccessDialog(title: model.title),
+      transitionDuration: const Duration(milliseconds: 600),
       transitionBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
           opacity: animation,
           child: ScaleTransition(
-            scale: Tween<double>(begin: 0.9, end: 1.0).animate(
-                CurvedAnimation(parent: animation, curve: Curves.easeOutBack)),
+            scale: Tween<double>(begin: 0.85, end: 1.0).animate(
+                CurvedAnimation(parent: animation, curve: Curves.easeOutCubic)),
             child: child,
           ),
         );
@@ -218,9 +217,9 @@ class ClaimScreen extends StatelessWidget {
   }
 }
 
-class _DeployDialog extends StatelessWidget {
+class _SyncSuccessDialog extends StatelessWidget {
   final String title;
-  const _DeployDialog({required this.title});
+  const _SyncSuccessDialog({required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -228,56 +227,49 @@ class _DeployDialog extends StatelessWidget {
       backgroundColor: Colors.transparent,
       elevation: 0,
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-      child: NeonCard(
-        padding: const EdgeInsets.all(36),
-        borderColor: DesignTokens.primary.withOpacity(0.4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            GlowContainer(
-              glowColor: DesignTokens.primary,
-              child: Container(
-                padding: const EdgeInsets.all(28),
-                decoration: BoxDecoration(
-                  color: DesignTokens.primary.withOpacity(0.08),
-                  shape: BoxShape.circle,
-                  border: Border.all(color: DesignTokens.primary.withOpacity(0.4), width: 2),
+      child: PremiumDashboardCard(
+        color: DesignTokens.primary,
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GlowContainer(
+                glowColor: DesignTokens.primary,
+                child: const Icon(Icons.offline_pin_rounded, size: 80, color: DesignTokens.primary),
+              ),
+              const SizedBox(height: 32),
+              Text(
+                "SYNCHRONIZED",
+                style: GoogleFonts.outfit(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w900,
+                  color: DesignTokens.textPrimary,
+                  letterSpacing: 4,
                 ),
-                child: const Icon(Icons.verified_rounded, size: 72, color: DesignTokens.primary),
               ),
-            ),
-            const SizedBox(height: 36),
-            Text(
-              "DEPLOYED",
-              style: GoogleFonts.outfit(
-                fontSize: 28,
-                fontWeight: FontWeight.w900,
-                color: DesignTokens.textPrimary,
-                letterSpacing: 6,
+              const SizedBox(height: 20),
+              Text(
+                'Access granted for "$title". Please restart the application to finalize the neural bridge.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.outfit(
+                  color: DesignTokens.textSecondary, 
+                  fontSize: 15, 
+                  height: 1.6,
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              'Assets for "$title" have been successfully synchronized. Restart your session to view changes in the interface.',
-              textAlign: TextAlign.center,
-              style: GoogleFonts.outfit(
-                color: DesignTokens.textSecondary, 
-                fontSize: 15, 
-                height: 1.7,
-                fontWeight: FontWeight.w400,
+              const SizedBox(height: 40),
+              CyberButton(
+                text: "TERMINATE LINK",
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const HomeScreen()),
+                      (_) => false);
+                },
               ),
-            ),
-            const SizedBox(height: 40),
-            GradientButton(
-              text: "RETURN TO BASE",
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HomeScreen()),
-                    (_) => false);
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

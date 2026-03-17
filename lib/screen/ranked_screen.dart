@@ -8,6 +8,7 @@ import '../provider/home_provider.dart';
 import '../model/home_item_model.dart';
 import 'level_id_screen.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 
 class RankedScreen extends StatelessWidget {
   final HomeItemModel model;
@@ -31,7 +32,7 @@ class RankedScreen extends StatelessWidget {
             slivers: [
               // Header with character image
               CyberSliverAppBar(
-                title: "League Tier",
+                title: "League TIER",
                 expandedHeight: 240,
                 accentColor: DesignTokens.primary,
                 backgroundExtras: [
@@ -39,7 +40,7 @@ class RankedScreen extends StatelessWidget {
                     right: -30,
                     bottom: -15,
                     child: Opacity(
-                      opacity: 0.12,
+                      opacity: 0.1,
                       child: Hero(
                         tag: 'character_bg_${model.title}',
                         child: model.image != null 
@@ -60,7 +61,7 @@ class RankedScreen extends StatelessWidget {
                     children: [
                       const Flexible(
                         child: GradientHeader(
-                          title: 'Competitive Division',
+                          title: 'COMPETITIVE_DIVISION',
                           fontSize: 13,
                         ),
                       ),
@@ -83,7 +84,7 @@ class RankedScreen extends StatelessWidget {
                             ),
                             const SizedBox(width: 8),
                             Text(
-                              "LIVE STATUS",
+                              "LIVE_FEED",
                               style: GoogleFonts.outfit(
                                 fontSize: 9,
                                 fontWeight: FontWeight.w900,
@@ -129,7 +130,7 @@ class RankedScreen extends StatelessWidget {
                   );
                 },
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 100)),
+              const SliverToBoxAdapter(child: SizedBox(height: 120)),
             ],
           ),
         ],
@@ -157,97 +158,81 @@ class RankedScreen extends StatelessWidget {
     final rankNames = ['BRONZE', 'SILVER', 'GOLD', 'PLATINUM', 'DIAMOND', 'HEROIC', 'GRANDMASTER'];
     final rankTag = index < rankNames.length ? rankNames[index] : 'LEGEND';
 
-    return NeonCard(
+    return PremiumDashboardCard(
       onTap: () => _handleSelection(context),
-      padding: const EdgeInsets.all(20),
-      borderColor: color.withOpacity(0.15),
-      child: Row(
-        children: [
-          // Rank icon box
-          GlowContainer(
-            glowColor: color,
-            child: Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: color.withOpacity(0.35), width: 1.5),
-              ),
-              child: Center(
-                child: Icon(Icons.military_tech_rounded, color: color, size: 28),
+      color: color,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            GlowContainer(
+              glowColor: color,
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: color.withOpacity(0.3), width: 1.5),
+                ),
+                child: Center(
+                  child: Icon(Icons.military_tech_rounded, color: color, size: 28),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 20),
+            const SizedBox(width: 20),
 
-          // Info
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Flexible(
-                      child: Text(
-                        rank.toUpperCase(),
-                        style: GoogleFonts.outfit(
-                          fontWeight: FontWeight.w900,
-                          fontSize: 18,
-                          color: DesignTokens.textPrimary,
-                          letterSpacing: -0.5,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: color.withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(6),
-                        border: Border.all(color: color.withOpacity(0.35), width: 1),
-                      ),
-                      child: Text(
-                        rankTag,
-                        style: GoogleFonts.outfit(
-                          fontSize: 9,
-                          fontWeight: FontWeight.w900,
-                          color: color,
-                          letterSpacing: 0.5,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          rank,
+                          style: GoogleFonts.outfit(
+                            fontWeight: FontWeight.w900,
+                            fontSize: 18,
+                            color: DesignTokens.textPrimary,
+                          ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  "Synthesizing operational protocols...",
-                  style: GoogleFonts.outfit(
-                    color: DesignTokens.textSecondary,
-                    fontSize: 13,
-                    fontWeight: FontWeight.w500,
+                      const SizedBox(width: 12),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.15),
+                          borderRadius: BorderRadius.circular(100),
+                        ),
+                        child: Text(
+                          rankTag,
+                          style: GoogleFonts.outfit(
+                            fontSize: 8,
+                            fontWeight: FontWeight.w900,
+                            color: color,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 6),
+                  Text(
+                    "Establishing neural uplink protocols",
+                    style: GoogleFonts.outfit(
+                      color: DesignTokens.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
 
-          // Arrow
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.05),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.chevron_right_rounded,
-              color: color,
-              size: 20,
-            ),
-          ),
-        ],
+            Icon(Icons.chevron_right_rounded, color: color.withOpacity(0.5), size: 24),
+          ],
+        ),
       ),
     );
   }

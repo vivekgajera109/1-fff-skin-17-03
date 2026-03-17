@@ -41,38 +41,34 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Atmospheric Background Elements
           _buildBackgroundElements(),
 
           SafeArea(
             child: Center(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
+                padding: const EdgeInsets.symmetric(horizontal: 24),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Critical Error Indicator
                     _buildErrorIndicator(),
 
                     const SizedBox(height: 50),
 
-                    // Error Message Card
                     _buildErrorMessage(),
 
                     const SizedBox(height: 50),
 
-                    // Action Section
                     _buildActionSection(),
 
                     const SizedBox(height: 48),
 
                     Text(
-                      "TERMINAL STATUS: DISCONNECTED",
+                      "TERMINAL_STATUS: DISCONNECTED",
                       style: GoogleFonts.outfit(
-                        fontSize: 10,
+                        fontSize: 9,
                         fontWeight: FontWeight.w900,
-                        color: DesignTokens.accent.withOpacity(0.4),
-                        letterSpacing: 3.5,
+                        color: DesignTokens.accent.withOpacity(0.3),
+                        letterSpacing: 3,
                       ),
                     ),
                   ],
@@ -116,16 +112,16 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
       child: Container(
         padding: const EdgeInsets.all(32),
         decoration: BoxDecoration(
-          color: DesignTokens.accent.withOpacity(0.08),
+          color: DesignTokens.accent.withOpacity(0.1),
           shape: BoxShape.circle,
           border: Border.all(
-            color: DesignTokens.accent.withOpacity(0.25),
-            width: 1.5,
+            color: DesignTokens.accent.withOpacity(0.3),
+            width: 2,
           ),
         ),
         child: const Icon(
           Icons.signal_wifi_connected_no_internet_4_rounded,
-          size: 72,
+          size: 64,
           color: DesignTokens.accent,
         ),
       ),
@@ -133,44 +129,45 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
   }
 
   Widget _buildErrorMessage() {
-    return NeonCard(
-      padding: const EdgeInsets.all(32),
-      borderColor: DesignTokens.accent.withOpacity(0.15),
-      child: Column(
-        children: [
-          Text(
-            "CONNECTION FAILED",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: 26,
-              fontWeight: FontWeight.w900,
-              color: DesignTokens.textPrimary,
-              letterSpacing: 2.0,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
-            height: 2,
-            width: 80,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [DesignTokens.accent, DesignTokens.accent.withOpacity(0)],
+    return PremiumDashboardCard(
+      color: DesignTokens.accent,
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          children: [
+            Text(
+              "CONNECTION_FAILED",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: DesignTokens.textPrimary,
+                letterSpacing: 2.0,
               ),
-              borderRadius: BorderRadius.circular(1),
             ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            "The secure data stream has been interrupted. Restore network protocols to re-establish secure terminal access.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: 15,
-              color: DesignTokens.textSecondary,
-              height: 1.7,
-              fontWeight: FontWeight.w400,
+            const SizedBox(height: 16),
+            Container(
+              height: 2,
+              width: 60,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [DesignTokens.accent, DesignTokens.accent.withOpacity(0)],
+                ),
+                borderRadius: BorderRadius.circular(1),
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 24),
+            Text(
+              "The secure data stream has been interrupted. Restore network protocols to re-establish secure terminal access.",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.outfit(
+                fontSize: 15,
+                color: DesignTokens.textSecondary,
+                height: 1.6,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -199,10 +196,10 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  "RESTORING SIGNAL...",
+                  "RESTORING_SIGNAL...",
                   style: GoogleFonts.outfit(
                     color: DesignTokens.primary,
-                    fontSize: 11,
+                    fontSize: 10,
                     fontWeight: FontWeight.w900,
                     letterSpacing: 2,
                   ),
@@ -212,10 +209,10 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
           ),
           const SizedBox(height: 32),
           SizedBox(
-            width: 200,
-            height: 3,
+            width: 180,
+            height: 2,
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(1.5),
+              borderRadius: BorderRadius.circular(1),
               child: LinearProgressIndicator(
                 backgroundColor: DesignTokens.primary.withOpacity(0.05),
                 valueColor: const AlwaysStoppedAnimation<Color>(DesignTokens.primary),
@@ -226,10 +223,9 @@ class _NoInternetScreenState extends State<NoInternetScreen> {
       );
     } else {
       return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: GradientButton(
-          text: "REBOOT CONNECTION",
-          icon: Icons.refresh_rounded,
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: CyberButton(
+          text: "REBOOT_CONNECTION",
           onPressed: _retryConnection,
         ),
       );

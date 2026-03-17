@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -5,6 +6,7 @@ import '../theme/design_tokens.dart';
 import '../widgets/premium_widgets.dart';
 import '../provider/onboarding_provider.dart';
 import 'home_screen.dart';
+import '../common/common_button/common_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -67,7 +69,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
 
           return Stack(
             children: [
-              // Dynamic Background Elements
               _buildBackgroundElements(),
 
               Column(
@@ -90,34 +91,39 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                 ],
               ),
 
-              // Tactical Skip Button
               Positioned(
                 top: MediaQuery.of(context).padding.top + 16,
                 right: 20,
                 child: GestureDetector(
                   onTap: () => _finishOnboarding(provider),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: DesignTokens.surface.withOpacity(0.5),
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: DesignTokens.primary.withOpacity(0.15)),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          "BYPASS",
-                          style: GoogleFonts.outfit(
-                            color: DesignTokens.textSecondary,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 10,
-                            letterSpacing: 2,
-                          ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: BackdropFilter(
+                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.05),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.white.withOpacity(0.1)),
                         ),
-                        const SizedBox(width: 8),
-                        Icon(Icons.fast_forward_rounded, color: DesignTokens.textSecondary.withOpacity(0.5), size: 14),
-                      ],
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              "BYPASS",
+                              style: GoogleFonts.outfit(
+                                color: DesignTokens.textSecondary,
+                                fontWeight: FontWeight.w900,
+                                fontSize: 10,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(Icons.fast_forward_rounded, color: DesignTokens.textSecondary.withOpacity(0.5), size: 14),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
                 ),
@@ -164,28 +170,31 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const SizedBox(height: 80),
+                  const SizedBox(height: 100),
                   AnimatedBuilder(
                     animation: _animController,
                     builder: (context, child) {
                       return Transform.translate(
-                        offset: Offset(0, 12 * (1 - _animController.value)),
+                        offset: Offset(0, 15 * (1 - _animController.value)),
                         child: child,
                       );
                     },
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        Container(
-                          width: 240,
-                          height: 240,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: RadialGradient(
-                              colors: [
-                                DesignTokens.primary.withOpacity(0.15),
-                                DesignTokens.primary.withOpacity(0),
-                              ],
+                        GlowContainer(
+                          glowColor: DesignTokens.primary,
+                          child: Container(
+                            width: 220,
+                            height: 220,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              gradient: RadialGradient(
+                                colors: [
+                                  DesignTokens.primary.withOpacity(0.15),
+                                  DesignTokens.primary.withOpacity(0),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -196,9 +205,9 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                             decoration: const BoxDecoration(
                               boxShadow: [
                                 BoxShadow(
-                                  color: Colors.black26,
-                                  blurRadius: 40,
-                                  offset: Offset(0, 20),
+                                  color: Colors.black45,
+                                  blurRadius: 50,
+                                  offset: Offset(0, 30),
                                 ),
                               ],
                             ),
@@ -221,28 +230,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(color: DesignTokens.primary.withOpacity(0.2)),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 6,
-                              height: 6,
-                              decoration: const BoxDecoration(
-                                color: DesignTokens.primary,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                            Text(
-                              "SYSTEM RECRUITMENT",
-                              style: GoogleFonts.outfit(
-                                fontSize: 9,
-                                fontWeight: FontWeight.w900,
-                                color: DesignTokens.primary,
-                                letterSpacing: 2,
-                              ),
-                            ),
-                          ],
+                        child: Text(
+                          "SYSTEM_RECRUITMENT",
+                          style: GoogleFonts.outfit(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w900,
+                            color: DesignTokens.primary,
+                            letterSpacing: 2,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 24),
@@ -250,14 +245,14 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                         page.title.toUpperCase(),
                         textAlign: TextAlign.center,
                         style: GoogleFonts.outfit(
-                          fontSize: 36,
+                          fontSize: 34,
                           fontWeight: FontWeight.w900,
                           color: DesignTokens.textPrimary,
                           letterSpacing: -1,
-                          height: 1.0,
+                          height: 1.1,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                       Text(
                         page.subtitle,
                         textAlign: TextAlign.center,
@@ -265,7 +260,6 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                           fontSize: 16,
                           color: DesignTokens.textSecondary,
                           height: 1.7,
-                          fontWeight: FontWeight.w400,
                         ),
                       ),
                     ],
@@ -293,7 +287,7 @@ class _OnboardingScreenState extends State<OnboardingScreen>
               totalPages,
               (index) => AnimatedContainer(
                 duration: const Duration(milliseconds: 500),
-                curve: Curves.elasticOut,
+                curve: Curves.fastOutSlowIn,
                 margin: const EdgeInsets.symmetric(horizontal: 4),
                 height: 4,
                 width: provider.currentPage == index ? 32 : 8,
@@ -303,18 +297,15 @@ class _OnboardingScreenState extends State<OnboardingScreen>
                       : null,
                   color: provider.currentPage == index
                       ? null
-                      : DesignTokens.divider.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(2),
+                      : DesignTokens.textSecondary.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
           ),
           const SizedBox(height: 48),
-          GradientButton(
-            text: isLastPage ? "INITIALIZE COMMAND" : "NEXT PROTOCOL",
-            icon: isLastPage
-                ? Icons.terminal_rounded
-                : Icons.chevron_right_rounded,
+          CyberButton(
+            text: isLastPage ? "INITIALIZE_COMMAND" : "NEXT_PROTOCOL",
             onPressed: () async {
               if (isLastPage) {
                 _finishOnboarding(provider);

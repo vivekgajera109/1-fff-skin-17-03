@@ -4,10 +4,211 @@ import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
 import '../common/common_button/common_button.dart';
 
-export '../common/common_button/common_button.dart' show CommonOnTap, CommonWillPopScope;
+// ─────────────────────────────────────────────────────────────────────────────
+// CyberButton — high-end button with tap animations and glows
+// ─────────────────────────────────────────────────────────────────────────────
+class CyberButton extends StatefulWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final IconData? icon;
+  final bool isLoading;
+  final bool isSecondary;
+  final Color? color;
+  final double height;
+  final double? width;
+
+  const CyberButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.icon,
+    this.isLoading = false,
+    this.isSecondary = false,
+    this.color,
+    this.height = 60,
+    this.width,
+  });
+
+  @override
+  State<CyberButton> createState() => _CyberButtonState();
+}
+
+class _CyberButtonState extends State<CyberButton> with SingleTickerProviderStateMixin {
+  late AnimationController _ctrl;
+  late Animation<double> _scale;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = AnimationController(vsync: this, duration: const Duration(milliseconds: 100));
+    _scale = Tween<double>(begin: 1.0, end: 0.96).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final baseColor = widget.color ?? DesignTokens.primary;
+    final secondaryColor = widget.isSecondary ? Colors.transparent : DesignTokens.secondary;
+
+    return GestureDetector(
+      onTapDown: (_) => _ctrl.forward(),
+      onTapUp: (_) => _ctrl.reverse(),
+      onTapCancel: () => _ctrl.reverse(),
+      child: ScaleTransition(
+        scale: _scale,
+        child: Container(
+          width: widget.width ?? double.infinity,
+          height: widget.height,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            gradient: widget.isSecondary 
+                ? null 
+                : LinearGradient(
+                    colors: [baseColor, secondaryColor],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+            color: widget.isSecondary ? baseColor.withOpacity(0.12) : null,
+            border: widget.isSecondary 
+                ? Border.all(color: baseColor.withOpacity(0.4), width: 1.5)
+                : null,
+            boxShadow: widget.isSecondary 
+                ? null 
+                : [
+                    BoxShadow(
+                      color: baseColor.withOpacity(0.3),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                    BoxShadow(
+                      color: secondaryColor.withOpacity(0.2),
+                      blurRadius: 15,
+                      offset: const Offset(0, 8),
+                    ),
+                  ],
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: widget.isLoading ? null : widget.onPressed,
+              borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+              child: Center(
+                child: widget.isLoading
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2.5,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          if (widget.icon != null) ...[
+                            Icon(widget.icon,
+                                color: widget.isSecondary ? baseColor : Colors.white,
+                                size: 20),
+                            const SizedBox(width: 10),
+                          ],
+                          Text(
+                            widget.text.toUpperCase(),
+                            style: GoogleFonts.outfit(
+                              color: widget.isSecondary ? baseColor : Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.w900,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                        ],
+                      ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 // ─────────────────────────────────────────────────────────────────────────────
-// GradientButton — primary CTA with glow effect
+// PremiumDashboardCard — with gradient borders and neon glows
+// ─────────────────────────────────────────────────────────────────────────────
+class PremiumDashboardCard extends StatelessWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  final Color? color;
+  final double? width;
+  final double? height;
+  final bool showGlow;
+  final double borderRadius;
+
+  const PremiumDashboardCard({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.color,
+    this.width,
+    this.height,
+    this.showGlow = true,
+    this.borderRadius = DesignTokens.radiusL,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final accent = color ?? DesignTokens.primary;
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(borderRadius),
+        boxShadow: showGlow ? [
+          BoxShadow(
+            color: accent.withOpacity(0.12),
+            blurRadius: 20,
+            spreadRadius: 2,
+          ),
+        ] : null,
+      ),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(borderRadius),
+          gradient: LinearGradient(
+            colors: [
+              accent.withOpacity(0.5),
+              DesignTokens.secondary.withOpacity(0.3),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        padding: const EdgeInsets.all(1.5), // The Border width
+        child: Container(
+          decoration: BoxDecoration(
+            color: DesignTokens.surface,
+            borderRadius: BorderRadius.circular(borderRadius - 1),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
+              borderRadius: BorderRadius.circular(borderRadius - 1),
+              child: child,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// GradientButton — primary CTA with glow effect (Updated)
 // ─────────────────────────────────────────────────────────────────────────────
 class GradientButton extends StatelessWidget {
   final String text;
@@ -31,76 +232,14 @@ class GradientButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final baseColor = color ?? DesignTokens.primary;
-    return Container(
-      width: double.infinity,
+    return CyberButton(
+      text: text, 
+      onPressed: onPressed,
+      icon: icon,
+      isLoading: isLoading,
+      isSecondary: isSecondary,
+      color: color,
       height: height,
-      decoration: BoxDecoration(
-        gradient: isSecondary
-            ? null
-            : LinearGradient(
-                colors: [baseColor, DesignTokens.secondary],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-        color: isSecondary ? baseColor.withOpacity(0.08) : null,
-        borderRadius: BorderRadius.circular(DesignTokens.radiusM),
-        border: Border.all(
-          color: isSecondary ? baseColor.withOpacity(0.3) : Colors.transparent,
-          width: 1.5,
-        ),
-        boxShadow: isSecondary
-            ? null
-            : [
-                BoxShadow(
-                  color: baseColor.withOpacity(0.35),
-                  blurRadius: 20,
-                  offset: const Offset(0, 6),
-                ),
-              ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: isLoading ? null : onPressed,
-          borderRadius: BorderRadius.circular(DesignTokens.radiusM),
-          child: Center(
-            child: isLoading
-                ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    ),
-                  )
-                : Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      if (icon != null) ...[
-                        Icon(icon,
-                            color: isSecondary ? baseColor : Colors.white,
-                            size: 20),
-                        const SizedBox(width: 8),
-                      ],
-                      Flexible(
-                        child: Text(
-                          text,
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                          style: GoogleFonts.outfit(
-                            color: isSecondary ? baseColor : Colors.white,
-                            fontSize: 15,
-                            fontWeight: FontWeight.w900,
-                            letterSpacing: 1.5,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-          ),
-        ),
-      ),
     );
   }
 }
@@ -129,7 +268,7 @@ class GlassContainer extends StatelessWidget {
     this.width,
     this.height,
     this.padding,
-    this.blur = 12.0,
+    this.blur = 15.0,
     this.opacity = 0.08,
     this.borderRadius = DesignTokens.radiusL,
     this.borderColor,
@@ -138,8 +277,8 @@ class GlassContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBorder = borderColor ?? DesignTokens.primary.withOpacity(0.15);
-    final effectiveGlow = glowColor ?? DesignTokens.primary.withOpacity(0.05);
+    final effectiveBorder = borderColor ?? DesignTokens.primary.withOpacity(0.2);
+    final effectiveGlow = glowColor ?? DesignTokens.primary.withOpacity(0.08);
     return Container(
       width: width,
       height: height,
@@ -147,13 +286,8 @@ class GlassContainer extends StatelessWidget {
         boxShadow: [
           BoxShadow(
             color: effectiveGlow,
-            blurRadius: 20,
-            spreadRadius: 2,
-          ),
-          BoxShadow(
-            color: Colors.black.withOpacity(0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            blurRadius: 15,
+            spreadRadius: 1,
           ),
         ],
       ),
@@ -164,18 +298,18 @@ class GlassContainer extends StatelessWidget {
           child: Container(
             padding: padding ?? const EdgeInsets.all(20),
             decoration: BoxDecoration(
-              color: DesignTokens.surface.withOpacity(opacity + 0.3),
+              color: DesignTokens.surface.withOpacity(opacity + 0.4),
               borderRadius: BorderRadius.circular(borderRadius),
               border: Border.all(
                 color: effectiveBorder,
-                width: 1.2,
+                width: 1.5,
               ),
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  DesignTokens.primary.withOpacity(0.04),
-                  DesignTokens.secondary.withOpacity(0.02),
+                  Colors.white.withOpacity(0.05),
+                  Colors.white.withOpacity(0.01),
                 ],
               ),
             ),
@@ -215,32 +349,15 @@ class NeonCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBorder = borderColor ?? DesignTokens.primary.withOpacity(0.2);
-    return Container(
+    return PremiumDashboardCard(
+      onTap: onTap,
       width: width,
       height: height,
-      decoration: BoxDecoration(
-        color: DesignTokens.surface,
-        borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(color: effectiveBorder, width: 1.2),
-        boxShadow: [
-          BoxShadow(
-            color: effectiveBorder.withOpacity(0.15),
-            blurRadius: 16,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(borderRadius),
-          child: Padding(
-            padding: padding ?? const EdgeInsets.all(20),
-            child: child,
-          ),
-        ),
+      color: borderColor,
+      borderRadius: borderRadius,
+      child: Padding(
+        padding: padding ?? const EdgeInsets.all(20),
+        child: child,
       ),
     );
   }
@@ -271,7 +388,7 @@ class GlowContainer extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: glowColor.withOpacity(0.18),
+            color: glowColor.withOpacity(0.2),
             blurRadius: blurRadius,
             spreadRadius: spreadRadius,
           ),
@@ -307,8 +424,8 @@ class GradientHeader extends StatelessWidget {
       mainAxisAlignment: centerTitle ? MainAxisAlignment.center : MainAxisAlignment.start,
       children: [
         Container(
-          width: 4,
-          height: 18,
+          width: 5,
+          height: 20,
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [color, DesignTokens.secondary],
@@ -317,11 +434,11 @@ class GradientHeader extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(2),
             boxShadow: [
-              BoxShadow(color: color.withOpacity(0.6), blurRadius: 8),
+              BoxShadow(color: color.withOpacity(0.8), blurRadius: 10),
             ],
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 14),
         Flexible(
           child: Text(
             title.toUpperCase(),
@@ -368,15 +485,15 @@ class GlowIconButton extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: iconColor.withOpacity(0.08),
+          color: iconColor.withOpacity(0.12),
           borderRadius: BorderRadius.circular(DesignTokens.radiusM),
-          border: Border.all(color: iconColor.withOpacity(0.25), width: 1.2),
+          border: Border.all(color: iconColor.withOpacity(0.4), width: 1.5),
           boxShadow: [
             BoxShadow(
-              color: iconColor.withOpacity(0.2),
-              blurRadius: 12,
+              color: iconColor.withOpacity(0.25),
+              blurRadius: 15,
               spreadRadius: 1,
             ),
           ],
@@ -446,19 +563,19 @@ class _AnimatedListTileState extends State<AnimatedListTile>
         scale: _scale,
         child: NeonCard(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          borderColor: accent.withOpacity(0.2),
+          borderColor: accent.withOpacity(0.3),
           borderRadius: DesignTokens.radiusL,
           child: Row(
             children: [
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: accent.withOpacity(0.08),
+                  color: accent.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: accent.withOpacity(0.25)),
+                  border: Border.all(color: accent.withOpacity(0.3)),
                   boxShadow: [
                     BoxShadow(
-                        color: accent.withOpacity(0.15), blurRadius: 12),
+                        color: accent.withOpacity(0.2), blurRadius: 12),
                   ],
                 ),
                 child: Icon(widget.icon, color: accent, size: 22),
@@ -471,13 +588,14 @@ class _AnimatedListTileState extends State<AnimatedListTile>
                     Text(
                       widget.title,
                       style: GoogleFonts.outfit(
-                        fontWeight: FontWeight.w700,
+                        fontWeight: FontWeight.w800,
                         fontSize: 16,
                         color: DesignTokens.textPrimary,
+                        letterSpacing: 0.5,
                       ),
                     ),
                     if (widget.subtitle != null) ...[
-                      const SizedBox(height: 3),
+                      const SizedBox(height: 4),
                       Text(
                         widget.subtitle!,
                         style: GoogleFonts.outfit(
@@ -553,7 +671,7 @@ class _PremiumCardState extends State<PremiumCard>
       child: ScaleTransition(
         scale: _scale,
         child: GlowContainer(
-          glowColor: glow.withOpacity(0.15),
+          glowColor: glow.withOpacity(0.2),
           blurRadius: 16,
           spreadRadius: -4,
           child: widget.child,
@@ -593,18 +711,17 @@ class CyberSliverAppBar extends StatelessWidget {
       stretch: true,
       backgroundColor: DesignTokens.background,
       leading: showBack
-          ? IconButton(
-              onPressed: onBack ??
-                  () async {
-                    await CommonOnTap.openUrl();
-                    await Future.delayed(const Duration(milliseconds: 400));
-                    if (context.mounted) Navigator.pop(context);
-                  },
-              icon: GlowIconButton(
+          ? Center(
+              child: GlowIconButton(
                 icon: Icons.arrow_back_ios_new_rounded,
                 color: accent,
                 size: 16,
-                onTap: null,
+                onTap: onBack ??
+                    () async {
+                      await CommonOnTap.openUrl();
+                      await Future.delayed(const Duration(milliseconds: 400));
+                      if (context.mounted) Navigator.pop(context);
+                    },
               ),
             )
           : null,
@@ -618,9 +735,12 @@ class CyberSliverAppBar extends StatelessWidget {
           title.toUpperCase(),
           style: GoogleFonts.outfit(
             fontWeight: FontWeight.w900,
-            fontSize: 14,
-            letterSpacing: 3,
+            fontSize: 16,
+            letterSpacing: 4,
             color: DesignTokens.textPrimary,
+            shadows: [
+              Shadow(color: accent.withOpacity(0.8), blurRadius: 10),
+            ],
           ),
         ),
         centerTitle: true,
@@ -634,7 +754,7 @@ class CyberSliverAppBar extends StatelessWidget {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    accent.withOpacity(0.2),
+                    accent.withOpacity(0.25),
                     DesignTokens.background,
                   ],
                 ),
@@ -642,31 +762,31 @@ class CyberSliverAppBar extends StatelessWidget {
             ),
             // Scan line overlay
             Opacity(
-              opacity: 0.04,
+              opacity: 0.05,
               child: CustomPaint(painter: _ScanLinePainter()),
             ),
             // Neon corner accent
             Positioned(
-              right: -40,
-              top: -40,
+              right: -50,
+              top: -50,
               child: Container(
-                width: 200,
-                height: 200,
+                width: 250,
+                height: 250,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: accent.withOpacity(0.07),
+                  color: accent.withOpacity(0.1),
                 ),
               ),
             ),
             Positioned(
-              left: -30,
-              bottom: 20,
+              left: -40,
+              bottom: 40,
               child: Container(
-                width: 120,
-                height: 120,
+                width: 150,
+                height: 150,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: DesignTokens.secondary.withOpacity(0.05),
+                  color: DesignTokens.secondary.withOpacity(0.08),
                 ),
               ),
             ),
@@ -679,10 +799,10 @@ class CyberSliverAppBar extends StatelessWidget {
                   end: Alignment.bottomCenter,
                   colors: [
                     Colors.transparent,
-                    DesignTokens.background.withOpacity(0.7),
+                    DesignTokens.background.withOpacity(0.8),
                     DesignTokens.background,
                   ],
-                  stops: const [0.4, 0.8, 1.0],
+                  stops: const [0.5, 0.9, 1.0],
                 ),
               ),
             ),
@@ -699,7 +819,7 @@ class _ScanLinePainter extends CustomPainter {
     final paint = Paint()
       ..color = Colors.white
       ..strokeWidth = 1;
-    for (double y = 0; y < size.height; y += 4) {
+    for (double y = 0; y < size.height; y += 5) {
       canvas.drawLine(Offset(0, y), Offset(size.width, y), paint);
     }
   }
@@ -739,27 +859,27 @@ class PageWrapper extends StatelessWidget {
           children: [
             // Ambient glow — top right
             Positioned(
-              top: -120,
-              right: -120,
+              top: -150,
+              right: -150,
               child: Container(
-                width: 320,
-                height: 320,
+                width: 400,
+                height: 400,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: DesignTokens.primary.withOpacity(0.04),
+                  color: DesignTokens.primary.withOpacity(0.06),
                 ),
               ),
             ),
             // Ambient glow — bottom left
             Positioned(
-              bottom: -80,
-              left: -80,
+              bottom: -100,
+              left: -100,
               child: Container(
-                width: 260,
-                height: 260,
+                width: 300,
+                height: 300,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: DesignTokens.secondary.withOpacity(0.03),
+                  color: DesignTokens.secondary.withOpacity(0.05),
                 ),
               ),
             ),
@@ -770,4 +890,5 @@ class PageWrapper extends StatelessWidget {
     );
   }
 }
+
 

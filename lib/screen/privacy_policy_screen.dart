@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../theme/design_tokens.dart';
 import '../widgets/premium_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../common/common_button/common_button.dart';
 
 class PrivacyPolicyScreen extends StatefulWidget {
   final String url;
@@ -55,19 +56,16 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
       useSafeArea: false,
       child: Column(
         children: [
-          // Tactical Header
           _buildTacticalHeader(context),
 
           Expanded(
             child: Stack(
               children: [
-                // Dark mode webview content
                 Container(
                   color: DesignTokens.background,
                   child: WebViewWidget(controller: _controller),
                 ),
 
-                // Premium Terminal Loader
                 if (_isLoading) _buildPremiumLoader(),
               ],
             ),
@@ -93,13 +91,6 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
             width: 1,
           ),
         ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 4),
-          ),
-        ],
       ),
       child: Row(
         children: [
@@ -113,7 +104,6 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               }
             },
             color: DesignTokens.textPrimary,
-            size: 20,
           ),
           const SizedBox(width: 16),
           Expanded(
@@ -121,19 +111,19 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "PRIVACY MANIFESTO",
+                  "PRIVACY_MANIFESTO",
                   style: GoogleFonts.outfit(
                     fontSize: 18,
                     fontWeight: FontWeight.w900,
                     color: DesignTokens.textPrimary,
-                    letterSpacing: 1.5,
+                    letterSpacing: 1,
                   ),
                 ),
                 Text(
-                  "SECURE PROTOCOL v2.4",
+                  "SECURE_PROTOCOL_v3.4.0",
                   style: GoogleFonts.outfit(
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 9,
+                    fontWeight: FontWeight.w900,
                     color: DesignTokens.secondary,
                     letterSpacing: 1,
                   ),
@@ -141,10 +131,10 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
               ],
             ),
           ),
-          const GlowContainer(
+          GlowContainer(
             glowColor: DesignTokens.primary,
             child: Icon(Icons.security_rounded,
-                color: DesignTokens.primary, size: 28),
+                color: DesignTokens.primary, size: 24),
           ),
         ],
       ),
@@ -161,35 +151,31 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
             const GlowContainer(
               glowColor: DesignTokens.primary,
               child: SizedBox(
-                height: 44,
-                width: 44,
+                height: 40,
+                width: 40,
                 child: CircularProgressIndicator(
-                  strokeWidth: 3,
+                  strokeWidth: 2,
                   valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primary),
                 ),
               ),
             ),
-            const SizedBox(height: 28),
+            const SizedBox(height: 32),
             Text(
-              "ESTABLISHING SECURE UPLINK...",
+              "ESTABLISHING_SECURE_UPLINK",
               style: GoogleFonts.outfit(
-                fontSize: 11,
+                fontSize: 10,
                 fontWeight: FontWeight.w900,
-                color: DesignTokens.textSecondary,
+                color: DesignTokens.textSecondary.withOpacity(0.8),
                 letterSpacing: 2,
               ),
             ),
-            const SizedBox(height: 8),
-            Container(
-              width: 150,
+            const SizedBox(height: 16),
+            SizedBox(
+              width: 120,
               height: 2,
-              decoration: BoxDecoration(
-                color: DesignTokens.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(1),
-              ),
               child: LinearProgressIndicator(
-                backgroundColor: Colors.transparent,
-                valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primary.withOpacity(0.5)),
+                backgroundColor: DesignTokens.primary.withOpacity(0.05),
+                valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primary.withOpacity(0.3)),
               ),
             ),
           ],

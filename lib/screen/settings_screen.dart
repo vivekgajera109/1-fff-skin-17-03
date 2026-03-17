@@ -6,6 +6,7 @@ import '../theme/design_tokens.dart';
 import '../widgets/premium_widgets.dart';
 import '../common/Ads/ads_card.dart';
 import '../helper/remote_config_service.dart';
+import '../common/common_button/common_button.dart';
 import 'privacy_policy_screen.dart';
 
 class SettingScreen extends StatelessWidget {
@@ -17,15 +18,14 @@ class SettingScreen extends StatelessWidget {
       useSafeArea: false,
       child: Stack(
         children: [
-          // Background atmospheric elements
           _buildBackgroundElements(),
 
           CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
               CyberSliverAppBar(
-                title: "Settings",
-                expandedHeight: 200,
+                title: "System CONFIG",
+                expandedHeight: 220,
                 accentColor: DesignTokens.secondary,
                 backgroundExtras: [
                   Positioned(
@@ -48,39 +48,37 @@ class SettingScreen extends StatelessWidget {
                       const SizedBox(height: 32),
                     ],
 
-                    // App Ecosystem
                     const GradientHeader(
-                      title: 'System Interface',
+                      title: 'CORE_INTERFACE',
                       fontSize: 13,
                     ),
                     const SizedBox(height: 24),
                     _buildSettingTile(
                       icon: Icons.share_rounded,
-                      title: "Relay Node",
-                      subtitle: "Broadcast to gaming network",
+                      title: "RELAY_NODE",
+                      subtitle: "Broadcast link to neural network",
                       accentColor: DesignTokens.primary,
                       onTap: _shareApp,
                     ),
                     const SizedBox(height: 16),
                     _buildSettingTile(
                       icon: Icons.star_rounded,
-                      title: "System Rating",
-                      subtitle: "Evaluate core performance",
+                      title: "SYSTEM_RATING",
+                      subtitle: "Evaluate core backend performance",
                       accentColor: const Color(0xFFFFD700),
                       onTap: _openAppUrl,
                     ),
                     const SizedBox(height: 40),
 
-                    // Security Protocols
                     const GradientHeader(
-                      title: 'Security Matrix',
+                      title: 'SECURITY_MATRIX',
                       fontSize: 13,
                     ),
                     const SizedBox(height: 24),
                     _buildSettingTile(
                       icon: Icons.shield_rounded,
-                      title: "Privacy Manifesto",
-                      subtitle: "Encrypted data management",
+                      title: "PRIVACY_MANIFESTO",
+                      subtitle: "Encrypted data management protocols",
                       accentColor: DesignTokens.secondary,
                       onTap: () async {
                         final url = RemoteConfigService.getPrivacyPolicyUrl();
@@ -95,7 +93,6 @@ class SettingScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 60),
                     
-                    // Version Info
                     Center(
                       child: _buildVersionBadge(),
                     ),
@@ -126,38 +123,36 @@ class SettingScreen extends StatelessWidget {
   }
 
   Widget _buildVersionBadge() {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: DesignTokens.surface,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: DesignTokens.divider),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8,
-            height: 8,
-            decoration: const BoxDecoration(
-              color: DesignTokens.secondary,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(color: DesignTokens.secondary, blurRadius: 6)
-              ],
+    return PremiumDashboardCard(
+      color: DesignTokens.secondary,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 8,
+              height: 8,
+              decoration: const BoxDecoration(
+                color: DesignTokens.secondary,
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(color: DesignTokens.secondary, blurRadius: 6)
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            "STABLE BUILD 1.0.4",
-            style: GoogleFonts.outfit(
-              fontSize: 10,
-              fontWeight: FontWeight.w900,
-              color: DesignTokens.textSecondary,
-              letterSpacing: 2.5,
+            const SizedBox(width: 16),
+            Text(
+              "BUILD_STABLE_1.0.8",
+              style: GoogleFonts.outfit(
+                fontSize: 10,
+                fontWeight: FontWeight.w900,
+                color: DesignTokens.textPrimary,
+                letterSpacing: 2.5,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -169,59 +164,53 @@ class SettingScreen extends StatelessWidget {
     required Color accentColor,
     required VoidCallback onTap,
   }) {
-    return NeonCard(
+    return PremiumDashboardCard(
       onTap: onTap,
-      borderColor: accentColor.withOpacity(0.12),
-      padding: const EdgeInsets.all(18),
-      child: Row(
-        children: [
-          GlowContainer(
-            glowColor: accentColor,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: accentColor.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: accentColor.withOpacity(0.25)),
+      color: accentColor,
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Row(
+          children: [
+            GlowContainer(
+              glowColor: accentColor,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: accentColor.withOpacity(0.3), width: 1.5),
+                ),
+                child: Icon(icon, color: accentColor, size: 24),
               ),
-              child: Icon(icon, color: accentColor, size: 24),
             ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title.toUpperCase(),
-                  style: GoogleFonts.outfit(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w900,
-                    color: DesignTokens.textPrimary,
-                    letterSpacing: -0.5,
+            const SizedBox(width: 24),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: GoogleFonts.outfit(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      color: DesignTokens.textPrimary,
+                      letterSpacing: -0.2,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.outfit(
-                    fontSize: 13,
-                    color: DesignTokens.textSecondary,
-                    fontWeight: FontWeight.w500,
+                  const SizedBox(height: 4),
+                  Text(
+                    subtitle,
+                    style: GoogleFonts.outfit(
+                      fontSize: 12,
+                      color: DesignTokens.textSecondary,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: DesignTokens.textSecondary.withOpacity(0.05),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.chevron_right_rounded, color: DesignTokens.textSecondary.withOpacity(0.3), size: 20),
-          ),
-        ],
+            Icon(Icons.chevron_right_rounded, color: DesignTokens.textSecondary.withOpacity(0.3), size: 20),
+          ],
+        ),
       ),
     );
   }
@@ -232,7 +221,7 @@ class SettingScreen extends StatelessWidget {
     final url = RemoteConfigService.getAppUrl();
     if (url.isEmpty) return;
     try {
-      await Share.share('Check out this amazing gaming utility! System Access: $url');
+      await Share.share('Establish connection to the ultimate gaming portal! Link: $url');
     } catch (e) {}
   }
 
