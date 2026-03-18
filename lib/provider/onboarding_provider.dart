@@ -31,6 +31,21 @@ class OnboardingProvider extends ChangeNotifier {
       image: AppIcons.bundles,
     ),
     OnboardingPage(
+      title: "Elite Arsenal",
+      subtitle: "Access high-caliber tactical equipment and weapon skins for ultimate fire-power.",
+      image: AppIcons.weapons,
+    ),
+    OnboardingPage(
+      title: "Tactical Transport",
+      subtitle: "Deploy rapidly across the battlefield with exclusive vehicle modifications.",
+      image: AppIcons.vehicles,
+    ),
+    OnboardingPage(
+      title: "High-Command Access",
+      subtitle: "Master the battlefield with A Patroa and other elite commander characters.",
+      image: AppIcons.aPatroa,
+    ),
+    OnboardingPage(
       title: "Spin & Win",
       subtitle: "Try your luck with spins and claim amazing rewards every day.",
       image: AppIcons.diamondBox, // Using diamond box for spin/wheel

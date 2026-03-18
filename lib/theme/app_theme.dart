@@ -3,34 +3,34 @@ import 'package:google_fonts/google_fonts.dart';
 import 'design_tokens.dart';
 
 class AppThemeV2 {
-  static ThemeData get lightMinimal {
+  static ThemeData get darkPremium {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
+      brightness: Brightness.dark,
       scaffoldBackgroundColor: DesignTokens.background,
       dividerColor: DesignTokens.divider,
-      colorScheme: const ColorScheme.light(
+      colorScheme: const ColorScheme.dark(
+        surface: DesignTokens.surface,
+        onSurface: DesignTokens.textPrimary,
         primary: DesignTokens.primary,
         secondary: DesignTokens.secondary,
-        surface: DesignTokens.background,
-        onSurface: DesignTokens.textPrimary,
-        error: DesignTokens.warning,
+        error: DesignTokens.error,
         onPrimary: Colors.white,
         onSecondary: Colors.white,
       ),
 
       // ── Typography ──────────────────────────────────────────────────────
-      textTheme: GoogleFonts.outfitTextTheme(
+      textTheme: GoogleFonts.interTextTheme(
         const TextTheme(
           displayLarge: TextStyle(
             fontSize: 32,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
             color: DesignTokens.textPrimary,
-            letterSpacing: -0.5,
+            letterSpacing: -1,
           ),
           displayMedium: TextStyle(
             fontSize: 28,
-            fontWeight: FontWeight.w700,
+            fontWeight: FontWeight.w800,
             color: DesignTokens.textPrimary,
             letterSpacing: -0.5,
           ),
@@ -64,15 +64,14 @@ class AppThemeV2 {
 
       // ── AppBar ──────────────────────────────────────────────────────────
       appBarTheme: AppBarTheme(
-        backgroundColor: DesignTokens.background,
+        backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        iconTheme: const IconThemeData(color: DesignTokens.textPrimary, size: 20),
-        titleTextStyle: GoogleFonts.outfit(
+        iconTheme: const IconThemeData(color: DesignTokens.textPrimary, size: 24),
+        titleTextStyle: GoogleFonts.inter(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: DesignTokens.textPrimary,
-          letterSpacing: -0.5,
         ),
       ),
 
@@ -80,9 +79,10 @@ class AppThemeV2 {
       cardTheme: CardThemeData(
         color: DesignTokens.surface,
         elevation: 0,
+        margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-          side: const BorderSide(color: DesignTokens.divider, width: 1),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusXL),
+          side: const BorderSide(color: DesignTokens.border, width: 1),
         ),
       ),
 
@@ -91,14 +91,15 @@ class AppThemeV2 {
         style: ElevatedButton.styleFrom(
           backgroundColor: DesignTokens.primary,
           foregroundColor: Colors.white,
-          minimumSize: const Size(double.infinity, 50),
+          minimumSize: const Size(double.infinity, 56),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(DesignTokens.radiusM),
           ),
-          elevation: 0,
-          textStyle: GoogleFonts.outfit(
+          elevation: 8,
+          shadowColor: DesignTokens.primary.withOpacity(0.4),
+          textStyle: GoogleFonts.inter(
             fontSize: 16,
-            fontWeight: FontWeight.w600,
+            fontWeight: FontWeight.w700,
           ),
         ),
       ),
@@ -108,34 +109,37 @@ class AppThemeV2 {
         filled: true,
         fillColor: DesignTokens.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusL),
           borderSide: const BorderSide(color: DesignTokens.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusL),
           borderSide: const BorderSide(color: DesignTokens.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+          borderRadius: BorderRadius.circular(DesignTokens.radiusL),
           borderSide: const BorderSide(color: DesignTokens.primary, width: 2),
         ),
         labelStyle: const TextStyle(color: DesignTokens.textSecondary),
-        hintStyle: const TextStyle(color: DesignTokens.textSecondary, fontSize: 14),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        hintStyle: const TextStyle(color: DesignTokens.textMuted, fontSize: 14),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       ),
 
       // ── Navigation Bar ───────────────────────────────────────────────────
       navigationBarTheme: NavigationBarThemeData(
-        backgroundColor: DesignTokens.background,
-        indicatorColor: DesignTokens.primary.withOpacity(0.1),
+        backgroundColor: DesignTokens.surface,
+        indicatorColor: DesignTokens.primary.withOpacity(0.2),
         labelTextStyle: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.selected)) {
-            return const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: DesignTokens.primary);
+            return GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w700, color: DesignTokens.primary);
           }
-          return const TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: DesignTokens.textSecondary);
+          return GoogleFonts.inter(fontSize: 11, fontWeight: FontWeight.w500, color: DesignTokens.textSecondary);
         }),
       ),
     );
   }
+
+  // Temporary for backwards compatibility
+  static ThemeData get lightMinimal => darkPremium;
 }
 

@@ -1,3 +1,4 @@
+import 'package:fff_skin_tools/widgets/premium_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
@@ -21,41 +22,41 @@ class CharactersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CommonWillPopScope(
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF5F5F7),
-        body: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            _buildAppBar(context),
-            if (RemoteConfigService.isAdsShow)
-              const SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-                  child: BanerAdsScreen(),
-                ),
-              ),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
-              sliver: SliverToBoxAdapter(
-                child: Row(
-                  children: [
-                    Text(
-                      "${characters.length} items",
-                      style: GoogleFonts.outfit(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: DesignTokens.textSecondary,
-                      ),
-                    ),
-                  ],
-                ),
+    return PageWrapper(
+      child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          _buildAppBar(context),
+          if (RemoteConfigService.isAdsShow)
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(20, 16, 20, 0),
+                child: BanerAdsScreen(),
               ),
             ),
-            ..._buildGridWithAds(context),
-            const SliverToBoxAdapter(child: SizedBox(height: 80)),
-          ],
-        ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(20, 24, 20, 16),
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                children: [
+                  const GradientHeader(title: "Collection", fontSize: 13),
+                  const Spacer(),
+                  Text(
+                    "${characters.length} ITEMS",
+                    style: GoogleFonts.inter(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: DesignTokens.textSecondary,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          ..._buildGridWithAds(context),
+          const SliverToBoxAdapter(child: SizedBox(height: 100)),
+        ],
       ),
     );
   }
@@ -63,26 +64,22 @@ class CharactersScreen extends StatelessWidget {
   Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
       pinned: true,
-      expandedHeight: 0,
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      shadowColor: Colors.black.withOpacity(0.06),
-      forceElevated: true,
-      leading: GestureDetector(
-        onTap: () => Navigator.of(context).maybePop(),
-        child: const Icon(Icons.arrow_back_ios_new_rounded,
-            color: DesignTokens.textPrimary, size: 20),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: DesignTokens.textPrimary, size: 20),
+        onPressed: () => Navigator.of(context).maybePop(),
       ),
       title: Text(
         appBarTitle,
-        style: GoogleFonts.outfit(
-          fontSize: 18,
-          fontWeight: FontWeight.w700,
+        style: GoogleFonts.inter(
+          fontSize: 20,
+          fontWeight: FontWeight.w800,
           color: DesignTokens.textPrimary,
         ),
       ),
-      centerTitle: false,
+      centerTitle: true,
     );
   }
 
@@ -93,16 +90,19 @@ class CharactersScreen extends StatelessWidget {
       final chunk = characters.sublist(i, end);
       slivers.add(
         SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 0.82,
+              mainAxisSpacing: 24,
+              crossAxisSpacing: 24,
+              childAspectRatio: 0.78,
             ),
             delegate: SliverChildBuilderDelegate(
-              (context, index) => _buildCard(context, chunk[index]),
+              (context, index) {
+                final isAlt = index % 2 != 0;
+                return _buildUniqueCard(context, chunk[index], isAlt);
+              },
               childCount: chunk.length,
             ),
           ),
@@ -112,7 +112,7 @@ class CharactersScreen extends StatelessWidget {
         slivers.add(
           const SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
+              padding: EdgeInsets.fromLTRB(20, 32, 20, 16),
               child: NativeAdsScreen(),
             ),
           ),
@@ -122,110 +122,123 @@ class CharactersScreen extends StatelessWidget {
     return slivers;
   }
 
-  Widget _buildCard(BuildContext context, HomeItemModel item) {
-    final List<Color> cardBgColors = [
-      const Color(0xFFEEF0FD), // soft indigo
-      const Color(0xFFEAF7F2), // soft emerald
-      const Color(0xFFFEF6E8), // soft amber
-      const Color(0xFFF0EEFB), // soft purple
-      const Color(0xFFE8F5F0), // soft teal
-      const Color(0xFFFDF0EE), // soft rose
-    ];
-    final bgColor = cardBgColors[characters.indexOf(item) % cardBgColors.length];
-
-    return GestureDetector(
+  Widget _buildUniqueCard(BuildContext context, HomeItemModel item, bool isAlt) {
+    final accentColor = _getAccentColor(item.title);
+    return CyberFrameCard(
+      accentColor: accentColor,
       onTap: () => _openDetails(context, item, isSquared),
-      child: Container(
-        decoration: BoxDecoration(
-          color: bgColor,
-          borderRadius: BorderRadius.circular(18),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.08),
-              blurRadius: 16,
-              offset: const Offset(0, 5),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(18),
-          child: Stack(
-            fit: StackFit.expand,
-            children: [
-              // Image fills the card
-              Padding(
-                padding: const EdgeInsets.fromLTRB(12, 12, 12, 40),
-                child: Hero(
-                  tag: 'character_${item.title}',
-                  child: item.image != null
-                      ? Image.asset(item.image!, fit: BoxFit.contain)
-                      : const Icon(Icons.inventory_2_outlined,
-                          color: DesignTokens.primary, size: 48),
+      child: Stack(
+        children: [
+          // Dynamic Corner Badge
+          Positioned(
+            top: 10,
+            left: 10,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: accentColor.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: accentColor.withOpacity(0.4), width: 0.5),
+              ),
+              child: Text(
+                "ID-${item.title.hashCode.toString().substring(0, 4)}",
+                style: GoogleFonts.inter(
+                  fontSize: 7,
+                  fontWeight: FontWeight.w900,
+                  color: accentColor,
+                  letterSpacing: 1,
                 ),
               ),
-              // Bottom gradient scrim
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 0,
-                child: Container(
-                  height: 72,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.55),
-                      ],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
+            ),
+          ),
+
+          Padding(
+            padding: EdgeInsets.fromLTRB(16, isAlt ? 40 : 24, 16, 16),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Hero(
+                    tag: 'character_${item.title}',
+                    child: Transform.rotate(
+                      angle: isAlt ? 0.05 : -0.05,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          boxShadow: [
+                            BoxShadow(
+                              color: accentColor.withOpacity(0.1),
+                              blurRadius: 20,
+                              spreadRadius: -10,
+                            )
+                          ],
+                        ),
+                        child: item.image != null
+                            ? Image.asset(item.image!, fit: BoxFit.contain)
+                            : const Icon(Icons.inventory_2_outlined,
+                                color: DesignTokens.primary, size: 48),
+                      ),
                     ),
                   ),
-                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        item.title,
-                        style: GoogleFonts.outfit(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 3),
-                      Row(
-                        children: [
-                          Container(
-                            width: 5,
-                            height: 5,
-                            decoration: const BoxDecoration(
-                              color: DesignTokens.secondary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            "Premium",
-                            style: GoogleFonts.outfit(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white.withOpacity(0.75),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 20),
+                Text(
+                  item.title.toUpperCase(),
+                  style: GoogleFonts.inter(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w900,
+                    color: DesignTokens.textPrimary,
+                    letterSpacing: -0.5,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 12),
+                _buildTechStatus(accentColor),
+              ],
+            ),
           ),
-        ),
+          
+          // Hover Overlay (always visible slightly in mobile)
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                color: accentColor.withOpacity(0.1),
+                borderRadius: const BorderRadius.only(topLeft: Radius.circular(15)),
+              ),
+              child: Center(
+                child: Icon(Icons.add_rounded, color: accentColor, size: 16),
+              ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildTechStatus(Color color) {
+    return Container(
+      width: double.infinity,
+      height: 2,
+      child: Stack(
+        children: [
+          Container(color: DesignTokens.border.withOpacity(0.2)),
+          FractionallySizedBox(
+            widthFactor: 0.6,
+            child: Container(color: color),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Color _getAccentColor(String title) {
+    if (title.contains("Skins")) return DesignTokens.primary;
+    if (title.contains("Weapons")) return DesignTokens.secondary;
+    return DesignTokens.primary;
   }
 
   Future<void> _openDetails(

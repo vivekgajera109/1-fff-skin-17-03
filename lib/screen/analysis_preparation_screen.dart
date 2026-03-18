@@ -1,8 +1,7 @@
+import 'package:fff_skin_tools/widgets/premium_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/simple_card.dart';
-import '../widgets/primary_button.dart';
 import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import '../helper/analytics_service.dart';
@@ -53,29 +52,30 @@ class _AnalysisPreparationScreenState extends State<AnalysisPreparationScreen> w
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.background,
-      body: CustomScrollView(
+    return PageWrapper(
+      child: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          _buildSliverAppBar(context),
+          _buildAppBar(context),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
               child: Column(
                 children: [
                   _buildStatusCard(),
                   const SizedBox(height: 32),
-                  _buildProgressCard(),
-                  const SizedBox(height: 40),
+                  _buildProgressModule(),
+                  const SizedBox(height: 48),
+                  const GradientHeader(title: "Execution Logs", fontSize: 13),
+                  const SizedBox(height: 20),
                   _buildLogSection(),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 48),
                   if (RemoteConfigService.isAdsShow) ...[
                     const NativeAdsScreen(),
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 48),
                   ],
-                  _buildActionPanel(),
-                  const SizedBox(height: 80),
+                  _buildActionTerminal(),
+                  const SizedBox(height: 100),
                 ],
               ),
             ),
@@ -85,158 +85,176 @@ class _AnalysisPreparationScreenState extends State<AnalysisPreparationScreen> w
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context) {
+  Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 110,
       pinned: true,
       elevation: 0,
-      backgroundColor: DesignTokens.primary,
+      backgroundColor: Colors.transparent,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: DesignTokens.textPrimary, size: 20),
         onPressed: () => Navigator.of(context).maybePop(),
       ),
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: DesignTokens.primaryGradient,
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -10,
-                bottom: -10,
-                child: Icon(
-                  Icons.analytics_rounded,
-                  size: 100,
-                  color: Colors.white.withOpacity(0.12),
-                ),
-              ),
-            ],
-          ),
-        ),
-        titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
-        title: Text(
-          "Staging Phase",
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-            color: Colors.white,
-          ),
+      title: Text(
+        "STAGING PHASE",
+        style: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.w900,
+          color: DesignTokens.textPrimary,
+          letterSpacing: 2,
         ),
       ),
+      centerTitle: true,
     );
   }
 
   Widget _buildStatusCard() {
-    return SimpleCard(
-      padding: const EdgeInsets.all(20),
-      child: Row(
-        children: [
-          Container(
-            width: 64,
-            height: 64,
-            decoration: BoxDecoration(
-              color: DesignTokens.primary.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Hero(
-                tag: 'character_${widget.model.title}',
-                child: widget.model.image != null
-                    ? Image.asset(widget.model.image!, height: 40, fit: BoxFit.contain)
-                    : const Icon(Icons.security_rounded, size: 28, color: DesignTokens.primary),
+    return CyberFrameCard(
+      accentColor: DesignTokens.primary,
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Row(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: DesignTokens.primary.withOpacity(0.05),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(16),
+                  bottomRight: Radius.circular(16),
+                ),
+                border: Border.all(color: DesignTokens.primary.withOpacity(0.1)),
+              ),
+              child: Center(
+                child: Hero(
+                  tag: 'character_${widget.model.title}',
+                  child: widget.model.image != null
+                      ? Image.asset(widget.model.image!, height: 50, fit: BoxFit.contain)
+                      : const Icon(Icons.security_rounded, size: 28, color: DesignTokens.primary),
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 20),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  widget.model.title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: DesignTokens.textPrimary,
+            const SizedBox(width: 20),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.model.title.toUpperCase(),
+                    style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w900,
+                      color: DesignTokens.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  "Synchronization Protocol V.2",
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
-                    color: DesignTokens.textSecondary,
-                    height: 1.4,
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: DesignTokens.secondary.withOpacity(0.1),
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                      border: Border.all(color: DesignTokens.secondary.withOpacity(0.2)),
+                    ),
+                    child: Text(
+                      "PROTO STAGE V2.0",
+                      style: GoogleFonts.inter(
+                        fontSize: 9,
+                        color: DesignTokens.secondary,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildProgressCard() {
-    return SimpleCard(
-      padding: const EdgeInsets.all(24),
+  Widget _buildProgressModule() {
+    return Container(
+      padding: const EdgeInsets.all(32),
+      decoration: BoxDecoration(
+        color: DesignTokens.surface.withOpacity(0.3),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(24),
+          bottomRight: Radius.circular(24),
+        ),
+        border: Border.all(color: DesignTokens.border.withOpacity(0.5)),
+      ),
       child: Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "Optimization Staging",
-                style: GoogleFonts.outfit(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
+                "OPTIMIZATION BUFFER",
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
                   color: DesignTokens.textPrimary,
+                  letterSpacing: 2,
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: DesignTokens.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(20),
+              Text(
+                "${(_progress * 100).toInt()}%",
+                style: GoogleFonts.inter(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w900,
+                  color: DesignTokens.primary,
                 ),
-                child: Text(
-                  "${(_progress * 100).toInt()}%",
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w800,
+              ),
+            ],
+          ),
+          const SizedBox(height: 28),
+          Stack(
+            children: [
+              Container(
+                height: 4,
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  color: DesignTokens.border.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              FractionallySizedBox(
+                widthFactor: _progress,
+                child: Container(
+                  height: 4,
+                  decoration: BoxDecoration(
                     color: DesignTokens.primary,
+                    borderRadius: BorderRadius.circular(2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: DesignTokens.primary.withOpacity(0.5),
+                        blurRadius: 10,
+                      )
+                    ],
                   ),
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          Stack(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Container(
-                height: 10,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: DesignTokens.divider,
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              FractionallySizedBox(
-                widthFactor: _progress,
-                child: Container(
-                  height: 10,
-                  decoration: BoxDecoration(
-                    gradient: DesignTokens.primaryGradient,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: DesignTokens.primary.withOpacity(0.3),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
+              Icon(Icons.radar_rounded, color: DesignTokens.textMuted.withOpacity(0.4), size: 12),
+              const SizedBox(width: 8),
+              Text(
+                "SYNCING BITSTREAM...",
+                style: GoogleFonts.inter(
+                  fontSize: 8,
+                  fontWeight: FontWeight.w900,
+                  color: DesignTokens.textMuted.withOpacity(0.6),
+                  letterSpacing: 1,
                 ),
               ),
             ],
@@ -248,24 +266,7 @@ class _AnalysisPreparationScreenState extends State<AnalysisPreparationScreen> w
 
   Widget _buildLogSection() {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Container(width: 3, height: 14, color: DesignTokens.primary),
-            const SizedBox(width: 10),
-            Text(
-              "SYSTEM LOGS",
-              style: GoogleFonts.outfit(
-                fontSize: 11,
-                fontWeight: FontWeight.w800,
-                color: DesignTokens.textSecondary,
-                letterSpacing: 1.5,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
         _buildLogItem("Profile Identification", _progress > 0.3),
         _buildLogItem("Metadata Synchronization", _progress > 0.6),
         _buildLogItem("Server Link Verification", _progress > 0.9),
@@ -274,47 +275,47 @@ class _AnalysisPreparationScreenState extends State<AnalysisPreparationScreen> w
   }
 
   Widget _buildLogItem(String title, bool isDone) {
-    return Container(
+    final color = isDone ? DesignTokens.secondary : DesignTokens.textMuted;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: DesignTokens.lightShadow,
+        color: isDone ? DesignTokens.surface.withOpacity(0.5) : Colors.transparent,
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(12),
+          bottomRight: Radius.circular(12),
+        ),
         border: Border.all(
-          color: isDone ? DesignTokens.secondary.withOpacity(0.2) : DesignTokens.border.withOpacity(0.5),
+          color: isDone ? color.withOpacity(0.2) : DesignTokens.border.withOpacity(0.1),
         ),
       ),
       child: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: isDone ? DesignTokens.secondary.withOpacity(0.1) : DesignTokens.divider,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              isDone ? Icons.check_rounded : Icons.sync_rounded,
-              size: 14,
-              color: isDone ? DesignTokens.secondary : DesignTokens.textSecondary,
-            ),
+          Icon(
+            isDone ? Icons.check_circle_rounded : Icons.radio_button_unchecked_rounded,
+            size: 16,
+            color: color,
           ),
           const SizedBox(width: 16),
-          Text(
-            title,
-            style: GoogleFonts.outfit(
-              fontSize: 14,
-              fontWeight: isDone ? FontWeight.w700 : FontWeight.w500,
-              color: isDone ? DesignTokens.textPrimary : DesignTokens.textSecondary,
+          Expanded(
+            child: Text(
+              title.toUpperCase(),
+              style: GoogleFonts.inter(
+                fontSize: 12,
+                fontWeight: isDone ? FontWeight.w900 : FontWeight.w600,
+                color: isDone ? DesignTokens.textPrimary : DesignTokens.textMuted,
+                letterSpacing: 0.5,
+              ),
             ),
           ),
-          const Spacer(),
           Text(
-            isDone ? "VERIFIED" : "STAGING",
-            style: GoogleFonts.outfit(
-              fontSize: 10,
-              fontWeight: FontWeight.w800,
-              color: isDone ? DesignTokens.secondary : DesignTokens.textSecondary.withOpacity(0.6),
+            isDone ? "COMPLETE" : "STAGING",
+            style: GoogleFonts.inter(
+              fontSize: 9,
+              fontWeight: FontWeight.w900,
+              color: isDone ? DesignTokens.secondary : DesignTokens.textMuted.withOpacity(0.4),
+              letterSpacing: 1,
             ),
           ),
         ],
@@ -322,46 +323,53 @@ class _AnalysisPreparationScreenState extends State<AnalysisPreparationScreen> w
     );
   }
 
-  Widget _buildActionPanel() {
+  Widget _buildActionTerminal() {
     bool isComplete = _progress >= 1.0;
-    return SimpleCard(
-      color: Colors.white,
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: DesignTokens.accent.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(Icons.flash_on_rounded, color: DesignTokens.accent, size: 32),
+    return Opacity(
+      opacity: isComplete ? 1.0 : 0.3,
+      child: CyberFrameCard(
+        accentColor: DesignTokens.secondary,
+        child: Padding(
+          padding: const EdgeInsets.all(32),
+          child: Column(
+            children: [
+              Text(
+                "VERIFICATION COMPLETE",
+                style: GoogleFonts.inter(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                  color: DesignTokens.secondary,
+                  letterSpacing: 3,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                "Execute Final Link",
+                style: GoogleFonts.inter(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: DesignTokens.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                "Authentication buffer is primed. Tap to execute the final handshake with your account bits.",
+                textAlign: TextAlign.center,
+                style: GoogleFonts.inter(
+                  fontSize: 14,
+                  color: DesignTokens.textSecondary,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 40),
+              CyberButton(
+                text: "EXECUTE PROTOCOL",
+                icon: Icons.bolt_rounded,
+                onPressed: isComplete ? () => _onExecute(context) : () {},
+              ),
+            ],
           ),
-          const SizedBox(height: 20),
-          Text(
-            "Protocol Finalized",
-            style: GoogleFonts.outfit(
-              fontSize: 20,
-              fontWeight: FontWeight.w800,
-              color: DesignTokens.textPrimary,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            "Account synchronization ready for execution.",
-            textAlign: TextAlign.center,
-            style: GoogleFonts.outfit(
-              fontSize: 14,
-              color: DesignTokens.textSecondary,
-              height: 1.5,
-            ),
-          ),
-          const SizedBox(height: 32),
-          PrimaryButton(
-            text: "Execute Synchronization",
-            onPressed: isComplete ? () => _onExecute(context) : null,
-          ),
-        ],
+        ),
       ),
     );
   }

@@ -1,9 +1,9 @@
+import 'package:fff_skin_tools/widgets/premium_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/simple_card.dart';
 import '../common/Ads/ads_card.dart';
 import '../helper/remote_config_service.dart';
 import '../common/common_button/common_button.dart';
@@ -14,133 +14,186 @@ class SettingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.background,
-      appBar: AppBar(
-        title: const Text("Settings"),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(DesignTokens.spacing24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (RemoteConfigService.isAdsShow) ...[
-              const NativeAdsScreen(),
-              const SizedBox(height: DesignTokens.spacing32),
-            ],
+    return PageWrapper(
+      child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          _buildAppBar(context),
+      SliverPadding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+        sliver: SliverList(
+          delegate: SliverChildListDelegate([
+                if (RemoteConfigService.isAdsShow) ...[
+                  const NativeAdsScreen(),
+                  const SizedBox(height: 40),
+                ],
 
-            Text(
-              "Account & App",
-              style: GoogleFonts.outfit(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: DesignTokens.textPrimary,
-              ),
+                const GradientHeader(title: "IDENTITY & DEPLOYMENT", fontSize: 13),
+                const SizedBox(height: 20),
+                _buildUniqueSettingTile(
+                  context,
+                  icon: Icons.share_rounded,
+                  title: "SHARE ELITE HUB",
+                  subtitle: "Sync tactical tools with squad members",
+                  status: "READY",
+                  accentColor: DesignTokens.primary,
+                  onTap: _shareApp,
+                ),
+                const SizedBox(height: 16),
+                _buildUniqueSettingTile(
+                  context,
+                  icon: Icons.star_rounded,
+                  title: "CORE FEEDBACK",
+                  subtitle: "Optimize our algorithms for elite play",
+                  status: "PENDING",
+                  accentColor: const Color(0xFFF59E0B),
+                  onTap: _openAppUrl,
+                ),
+                
+                const SizedBox(height: 40),
+                const GradientHeader(title: "GOVERNANCE & PROTOCOLS", fontSize: 13),
+                const SizedBox(height: 20),
+                _buildUniqueSettingTile(
+                  context,
+                  icon: Icons.privacy_tip_rounded,
+                  title: "DATA SECURE CRYPT",
+                  subtitle: "Review your secure uplink protocols",
+                  status: "SECURED",
+                  accentColor: DesignTokens.secondary,
+                  onTap: () async {
+                    final url = RemoteConfigService.getPrivacyPolicyUrl();
+                    await CommonOnTap.openUrl();
+                    await Future.delayed(const Duration(milliseconds: 200));
+                    if (!context.mounted) return;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => PrivacyPolicyScreen(url: url)));
+                  },
+                ),
+                const SizedBox(height: 16),
+                _buildUniqueSettingTile(
+                  context,
+                  icon: Icons.info_outline_rounded,
+                  title: "SYSTEM RUNTIME",
+                  subtitle: "Version 1.0.8 (Stable Fragment)",
+                  status: "ACTIVE",
+                  accentColor: DesignTokens.textSecondary,
+                  onTap: () {},
+                ),
+                const SizedBox(height: 100),
+              ]),
             ),
-            const SizedBox(height: DesignTokens.spacing16),
-            _buildSettingTile(
-              icon: Icons.share_rounded,
-              title: "Share App",
-              subtitle: "Share the experience with your friends",
-              accentColor: DesignTokens.primary,
-              onTap: _shareApp,
-            ),
-            const SizedBox(height: DesignTokens.spacing12),
-            _buildSettingTile(
-              icon: Icons.star_rounded,
-              title: "Rate Us",
-              subtitle: "Support us by giving a high rating",
-              accentColor: const Color(0xFFF59E0B),
-              onTap: _openAppUrl,
-            ),
-            
-            const SizedBox(height: DesignTokens.spacing32),
-            Text(
-              "Support & Privacy",
-              style: GoogleFonts.outfit(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: DesignTokens.textPrimary,
-              ),
-            ),
-            const SizedBox(height: DesignTokens.spacing16),
-            _buildSettingTile(
-              icon: Icons.privacy_tip_rounded,
-              title: "Privacy Policy",
-              subtitle: "How we protect your gaming data",
-              accentColor: DesignTokens.secondary,
-              onTap: () async {
-                final url = RemoteConfigService.getPrivacyPolicyUrl();
-                await CommonOnTap.openUrl();
-                await Future.delayed(const Duration(milliseconds: 200));
-                if (!context.mounted) return;
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => PrivacyPolicyScreen(url: url)));
-              },
-            ),
-            const SizedBox(height: 12),
-            _buildSettingTile(
-              icon: Icons.info_outline_rounded,
-              title: "Version",
-              subtitle: "Stable Build 1.0.8",
-              accentColor: DesignTokens.textSecondary,
-              onTap: () {},
-            ),
-            const SizedBox(height: 60),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSettingTile({
+  Widget _buildAppBar(BuildContext context) {
+    return SliverAppBar(
+      pinned: true,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: DesignTokens.textPrimary, size: 20),
+        onPressed: () => Navigator.of(context).maybePop(),
+      ),
+      title: Text(
+        "CORE PROTOCOLS",
+        style: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.w900,
+          color: DesignTokens.textPrimary,
+          letterSpacing: 2.5,
+        ),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  Widget _buildUniqueSettingTile(BuildContext context, {
     required IconData icon,
     required String title,
     required String subtitle,
+    required String status,
     required Color accentColor,
     required VoidCallback onTap,
   }) {
-    return SimpleCard(
+    return GestureDetector(
       onTap: onTap,
-      padding: const EdgeInsets.all(16),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Icon(icon, color: accentColor, size: 22),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: DesignTokens.textPrimary,
+      child: CyberFrameCard(
+        accentColor: accentColor,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Row(
+            children: [
+               // Icon Hub
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.1),
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(12),
+                    bottomRight: Radius.circular(12),
+                    topRight: Radius.circular(4),
+                    bottomLeft: Radius.circular(4),
+                  ),
+                  border: Border.all(color: accentColor.withOpacity(0.2)),
+                ),
+                child: Icon(icon, color: accentColor, size: 20),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: GoogleFonts.inter(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w900,
+                        color: DesignTokens.textPrimary,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      subtitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.inter(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: DesignTokens.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+               // Tech Status Tag
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: accentColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  status,
+                  style: GoogleFonts.inter(
+                    fontSize: 8,
+                    fontWeight: FontWeight.w900,
+                    color: accentColor,
+                    letterSpacing: 1,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
-                    color: DesignTokens.textSecondary,
-                  ),
-                ),
-              ],
-            ),
+              ),
+            ],
           ),
-          Icon(Icons.arrow_forward_ios_rounded, color: DesignTokens.textSecondary.withOpacity(0.2), size: 14),
-        ],
+        ),
       ),
     );
   }

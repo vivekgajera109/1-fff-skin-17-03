@@ -1,5 +1,4 @@
 import 'dart:math';
-import 'package:fff_skin_tools/common/modern_ui.dart';
 import 'package:fff_skin_tools/constants/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';

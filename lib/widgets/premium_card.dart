@@ -6,13 +6,15 @@ class PremiumCard extends StatefulWidget {
   final VoidCallback? onTap;
   final bool useGradient;
   final List<Color>? gradientColors;
+  final double? borderRadius;
 
   const PremiumCard({
     super.key,
     required this.child,
     this.onTap,
-    this.useGradient = true,
+    this.useGradient = false,
     this.gradientColors,
+    this.borderRadius,
   });
 
   @override
@@ -43,6 +45,8 @@ class _PremiumCardState extends State<PremiumCard> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    final radius = widget.borderRadius ?? DesignTokens.radiusXL;
+    
     return GestureDetector(
       onTapDown: (_) => widget.onTap != null ? _controller.forward() : null,
       onTapUp: (_) => widget.onTap != null ? _controller.reverse() : null,
@@ -52,7 +56,7 @@ class _PremiumCardState extends State<PremiumCard> with SingleTickerProviderStat
         scale: _scaleAnimation,
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderRadius: BorderRadius.circular(radius),
             gradient: widget.useGradient
                 ? LinearGradient(
                     colors: widget.gradientColors ?? [DesignTokens.primary, DesignTokens.secondary],
@@ -61,15 +65,30 @@ class _PremiumCardState extends State<PremiumCard> with SingleTickerProviderStat
                   )
                 : null,
             color: widget.useGradient ? null : DesignTokens.surface,
-            boxShadow: [
-              BoxShadow(
-                color: (widget.gradientColors?.first ?? DesignTokens.primary).withOpacity(0.3),
-                blurRadius: 15,
-                offset: const Offset(0, 8),
-              ),
-            ],
+            border: Border.all(
+              color: DesignTokens.border.withOpacity(0.5),
+              width: 1,
+            ),
+            boxShadow: widget.useGradient 
+              ? [
+                BoxShadow(
+                  color: (widget.gradientColors?.first ?? DesignTokens.primary).withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ]
+              : [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.2),
+                  blurRadius: 20,
+                  offset: const Offset(0, 10),
+                ),
+              ],
           ),
-          child: widget.child,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(radius),
+            child: widget.child,
+          ),
         ),
       ),
     );

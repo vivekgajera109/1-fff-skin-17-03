@@ -1,8 +1,7 @@
+import 'package:fff_skin_tools/widgets/premium_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/simple_card.dart';
-import '../widgets/primary_button.dart';
 import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import 'ranked_screen.dart';
@@ -20,133 +19,38 @@ class NickNameScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CommonWillPopScope(
-      child: Scaffold(
-        backgroundColor: DesignTokens.background,
-        body: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            _buildSliverAppBar(context),
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSyncAlert(),
-                    const SizedBox(height: 32),
-                    _buildHeader("Item Selection"),
-                    const SizedBox(height: 16),
-                    _buildInfoCard(),
-                    const SizedBox(height: 40),
-                    _buildHeader("Account Sync"),
-                    const SizedBox(height: 16),
-                    _buildInputSection(),
-                    const SizedBox(height: 48),
-                    if (RemoteConfigService.isAdsShow) ...[
-                      const NativeAdsScreen(),
-                      const SizedBox(height: 48),
-                    ],
-                    PrimaryButton(
-                      text: "Synchronize Account",
-                      onPressed: () => _onProceed(context),
-                    ),
-                    const SizedBox(height: 80),
+    return PageWrapper(
+      child: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          _buildAppBar(context),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSyncUplinkHeader(),
+                  const SizedBox(height: 32),
+                  const GradientHeader(title: "Target Asset", fontSize: 13),
+                  const SizedBox(height: 16),
+                  _buildInfoCard(),
+                  const SizedBox(height: 48),
+                  const GradientHeader(title: "Identity Verification", fontSize: 13),
+                  const SizedBox(height: 16),
+                  _buildInputTerminal(context),
+                  const SizedBox(height: 56),
+                  if (RemoteConfigService.isAdsShow) ...[
+                    const NativeAdsScreen(),
+                    const SizedBox(height: 56),
                   ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSliverAppBar(BuildContext context) {
-    return SliverAppBar(
-      expandedHeight: 110,
-      pinned: true,
-      elevation: 0,
-      backgroundColor: DesignTokens.primary,
-      leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
-        onPressed: () => Navigator.of(context).maybePop(),
-      ),
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: DesignTokens.primaryGradient,
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -10,
-                bottom: -10,
-                child: Icon(
-                  Icons.verified_user_rounded,
-                  size: 100,
-                  color: Colors.white.withOpacity(0.12),
-                ),
-              ),
-            ],
-          ),
-        ),
-        titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
-        title: Text(
-          "Synchronization",
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(String title) {
-    return Row(
-      children: [
-        Container(
-          width: 3,
-          height: 16,
-          decoration: BoxDecoration(
-            color: DesignTokens.primary,
-            borderRadius: BorderRadius.circular(2),
-          ),
-        ),
-        const SizedBox(width: 10),
-        Text(
-          title,
-          style: GoogleFonts.outfit(
-            fontSize: 18,
-            fontWeight: FontWeight.w800,
-            color: DesignTokens.textPrimary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSyncAlert() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: DesignTokens.secondary.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: DesignTokens.secondary.withOpacity(0.2)),
-      ),
-      child: Row(
-        children: [
-          const Icon(Icons.security_rounded, color: DesignTokens.secondary, size: 20),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Text(
-              "Your information is stored locally and used only for synchronization.",
-              style: GoogleFonts.outfit(
-                fontSize: 12,
-                color: DesignTokens.secondary,
-                fontWeight: FontWeight.w600,
+                  CyberButton(
+                    text: "COMMIT FRAGMENT",
+                    icon: Icons.security_rounded,
+                    onPressed: () => _onProceed(context),
+                  ),
+                  const SizedBox(height: 100),
+                ],
               ),
             ),
           ),
@@ -155,46 +59,70 @@ class NickNameScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoCard() {
-    return SimpleCard(
+  Widget _buildAppBar(BuildContext context) {
+    return SliverAppBar(
+      pinned: true,
+      elevation: 0,
+      backgroundColor: Colors.transparent,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: DesignTokens.textPrimary, size: 20),
+        onPressed: () => Navigator.of(context).maybePop(),
+      ),
+      title: Text(
+        "ENCRYPTED SYNC",
+        style: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.w900,
+          color: DesignTokens.textPrimary,
+          letterSpacing: 2,
+        ),
+      ),
+      centerTitle: true,
+    );
+  }
+
+  Widget _buildSyncUplinkHeader() {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: DesignTokens.secondary.withOpacity(0.05),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(20),
+          bottomRight: Radius.circular(20),
+        ),
+        border: Border.all(color: DesignTokens.secondary.withOpacity(0.1)),
+      ),
       child: Row(
         children: [
           Container(
-            width: 70,
-            height: 70,
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: DesignTokens.primary.withOpacity(0.06),
-              borderRadius: BorderRadius.circular(20),
+              color: DesignTokens.secondary.withOpacity(0.1),
+              shape: BoxShape.circle,
             ),
-            child: Center(
-              child: Hero(
-                tag: 'character_${model.title}',
-                child: model.image != null
-                    ? Image.asset(model.image!, height: 45, fit: BoxFit.contain)
-                    : const Icon(Icons.person_outline_rounded, size: 36, color: DesignTokens.primary),
-              ),
-            ),
+            child: const Icon(Icons.hub_rounded, color: DesignTokens.secondary, size: 18),
           ),
-          const SizedBox(width: 20),
+          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  model.title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w800,
-                    color: DesignTokens.textPrimary,
+                  "SECURE UPLINK ACTIVE",
+                  style: GoogleFonts.inter(
+                    fontSize: 10,
+                    color: DesignTokens.secondary,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.5,
                   ),
                 ),
-                const SizedBox(height: 2),
+                const SizedBox(height: 4),
                 Text(
-                  "Awaiting Validation",
-                  style: GoogleFonts.outfit(
-                    fontSize: 13,
-                    color: DesignTokens.primary,
-                    fontWeight: FontWeight.w600,
+                  "Fragment mapping initialized. Payload secure.",
+                  style: GoogleFonts.inter(
+                    fontSize: 11,
+                    color: DesignTokens.textSecondary,
+                    height: 1.3,
                   ),
                 ),
               ],
@@ -205,51 +133,122 @@ class NickNameScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildInputSection() {
+  Widget _buildInfoCard() {
+    return Column(
+      children: [
+        Center(
+          child: Hero(
+            tag: 'character_${model.title}',
+            child: CyberImageFrame(
+              imagePath: model.image,
+              accentColor: DesignTokens.primary,
+              height: 200,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          model.title.toUpperCase(),
+          style: GoogleFonts.inter(
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: DesignTokens.textPrimary,
+            letterSpacing: -0.5,
+          ),
+        ),
+        const SizedBox(height: 8),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+          decoration: BoxDecoration(
+            color: DesignTokens.primary.withOpacity(0.1),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            ),
+            border: Border.all(color: DesignTokens.primary.withOpacity(0.2)),
+          ),
+          child: Text(
+            "TARGET ASSET VERIFIED",
+            style: GoogleFonts.inter(
+              fontSize: 10,
+              color: DesignTokens.primary,
+              fontWeight: FontWeight.w900,
+              letterSpacing: 1.5,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildInputTerminal(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
-            boxShadow: DesignTokens.premiumShadow,
-            border: Border.all(color: DesignTokens.border.withOpacity(0.5)),
-          ),
-          child: TextField(
-            controller: _controller,
-            style: GoogleFonts.outfit(
-              color: DesignTokens.textPrimary,
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
+            color: DesignTokens.surface.withOpacity(0.3),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16),
+              bottomRight: Radius.circular(16),
             ),
-            decoration: InputDecoration(
-              hintText: "Enter your Gaming ID",
-              hintStyle: GoogleFonts.outfit(
-                color: DesignTokens.textSecondary.withOpacity(0.4),
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
+            border: Border.all(color: DesignTokens.border.withOpacity(0.4)),
+          ),
+          child: Theme(
+            data: Theme.of(context).copyWith(
+              inputDecorationTheme: const InputDecorationTheme(
+                border: InputBorder.none,
+                filled: false,
               ),
-              prefixIcon: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 12),
-                child: const Icon(Icons.fingerprint_rounded, color: DesignTokens.primary, size: 22),
+            ),
+            child: TextField(
+              controller: _controller,
+              style: GoogleFonts.inter(
+                color: DesignTokens.primary,
+                fontWeight: FontWeight.w900,
+                fontSize: 18,
+                letterSpacing: 3,
               ),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+              cursorColor: DesignTokens.primary,
+              decoration: InputDecoration(
+                hintText: "_ _ _ _ _ _ _ _ _",
+                hintStyle: GoogleFonts.inter(
+                  color: DesignTokens.textMuted.withOpacity(0.2),
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 3,
+                ),
+                prefixIcon: const Icon(Icons.terminal_rounded, color: DesignTokens.primary, size: 20),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+              ),
             ),
           ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            "Syncing requires your unique game identifier to ensure correctly linked delivery.",
-            style: GoogleFonts.outfit(
-              color: DesignTokens.textSecondary,
-              fontSize: 13,
-              height: 1.5,
-              fontWeight: FontWeight.w500,
-            ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "TERMINAL ID REQUIRED",
+                style: GoogleFonts.inter(
+                  color: DesignTokens.textPrimary,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w900,
+                  letterSpacing: 1,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Deployment bits requires a unique session identifier to map the fragment to your terminal profile.",
+                style: GoogleFonts.inter(
+                  color: DesignTokens.textSecondary,
+                  fontSize: 13,
+                  height: 1.6,
+                ),
+              ),
+            ],
           ),
         ),
       ],

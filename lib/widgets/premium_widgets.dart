@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
 import '../common/common_button/common_button.dart';
+import 'premium_card.dart';
+export 'premium_card.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CyberButton — high-end button with tap animations and glows
@@ -25,7 +27,7 @@ class CyberButton extends StatefulWidget {
     this.isLoading = false,
     this.isSecondary = false,
     this.color,
-    this.height = 60,
+    this.height = 56,
     this.width,
   });
 
@@ -53,8 +55,7 @@ class _CyberButtonState extends State<CyberButton> with SingleTickerProviderStat
   @override
   Widget build(BuildContext context) {
     final baseColor = widget.color ?? DesignTokens.primary;
-    final secondaryColor = widget.isSecondary ? Colors.transparent : DesignTokens.secondary;
-
+    
     return GestureDetector(
       onTapDown: (_) => _ctrl.forward(),
       onTapUp: (_) => _ctrl.reverse(),
@@ -65,45 +66,30 @@ class _CyberButtonState extends State<CyberButton> with SingleTickerProviderStat
           width: widget.width ?? double.infinity,
           height: widget.height,
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            borderRadius: BorderRadius.circular(DesignTokens.radiusM),
             gradient: widget.isSecondary 
                 ? null 
-                : LinearGradient(
-                    colors: [baseColor, secondaryColor],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-            color: widget.isSecondary ? baseColor.withOpacity(0.12) : null,
+                : DesignTokens.primaryGradient,
+            color: widget.isSecondary ? Colors.transparent : null,
             border: widget.isSecondary 
-                ? Border.all(color: baseColor.withOpacity(0.4), width: 1.5)
+                ? Border.all(color: baseColor, width: 2)
                 : null,
             boxShadow: widget.isSecondary 
                 ? null 
-                : [
-                    BoxShadow(
-                      color: baseColor.withOpacity(0.3),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                    BoxShadow(
-                      color: secondaryColor.withOpacity(0.2),
-                      blurRadius: 15,
-                      offset: const Offset(0, 8),
-                    ),
-                  ],
+                : DesignTokens.neonGlow(baseColor),
           ),
           child: Material(
             color: Colors.transparent,
             child: InkWell(
               onTap: widget.isLoading ? null : widget.onPressed,
-              borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+              borderRadius: BorderRadius.circular(DesignTokens.radiusM),
               child: Center(
                 child: widget.isLoading
                     ? const SizedBox(
                         height: 22,
                         width: 22,
                         child: CircularProgressIndicator(
-                          strokeWidth: 2.5,
+                          strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
@@ -112,17 +98,16 @@ class _CyberButtonState extends State<CyberButton> with SingleTickerProviderStat
                         children: [
                           if (widget.icon != null) ...[
                             Icon(widget.icon,
-                                color: widget.isSecondary ? baseColor : Colors.white,
+                                color: Colors.white,
                                 size: 20),
-                            const SizedBox(width: 10),
+                            const SizedBox(width: 8),
                           ],
                           Text(
-                            widget.text.toUpperCase(),
-                            style: GoogleFonts.outfit(
-                              color: widget.isSecondary ? baseColor : Colors.white,
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 2,
+                            widget.text,
+                            style: GoogleFonts.inter(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
                         ],
@@ -146,7 +131,7 @@ class PremiumDashboardCard extends StatelessWidget {
   final double? width;
   final double? height;
   final bool showGlow;
-  final double borderRadius;
+  final double? borderRadius;
 
   const PremiumDashboardCard({
     super.key,
@@ -155,54 +140,17 @@ class PremiumDashboardCard extends StatelessWidget {
     this.color,
     this.width,
     this.height,
-    this.showGlow = true,
-    this.borderRadius = DesignTokens.radiusL,
+    this.showGlow = false,
+    this.borderRadius,
   });
 
   @override
   Widget build(BuildContext context) {
-    final accent = color ?? DesignTokens.primary;
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(borderRadius),
-        boxShadow: showGlow ? [
-          BoxShadow(
-            color: accent.withOpacity(0.12),
-            blurRadius: 20,
-            spreadRadius: 2,
-          ),
-        ] : null,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(borderRadius),
-          gradient: LinearGradient(
-            colors: [
-              accent.withOpacity(0.5),
-              DesignTokens.secondary.withOpacity(0.3),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-        padding: const EdgeInsets.all(1.5), // The Border width
-        child: Container(
-          decoration: BoxDecoration(
-            color: DesignTokens.surface,
-            borderRadius: BorderRadius.circular(borderRadius - 1),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(borderRadius - 1),
-              child: child,
-            ),
-          ),
-        ),
-      ),
+    final effectiveRadius = borderRadius ?? DesignTokens.radiusXL;
+    return PremiumCard(
+      onTap: onTap,
+      borderRadius: effectiveRadius,
+      child: child,
     );
   }
 }
@@ -258,7 +206,7 @@ class GlassContainer extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final double blur;
   final double opacity;
-  final double borderRadius;
+  final double? borderRadius;
   final Color? borderColor;
   final Color? glowColor;
 
@@ -268,53 +216,33 @@ class GlassContainer extends StatelessWidget {
     this.width,
     this.height,
     this.padding,
-    this.blur = 15.0,
-    this.opacity = 0.08,
-    this.borderRadius = DesignTokens.radiusL,
+    this.blur = 20.0,
+    this.opacity = 0.1,
+    this.borderRadius,
     this.borderColor,
     this.glowColor,
   });
 
   @override
   Widget build(BuildContext context) {
-    final effectiveBorder = borderColor ?? DesignTokens.primary.withOpacity(0.2);
-    final effectiveGlow = glowColor ?? DesignTokens.primary.withOpacity(0.08);
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: effectiveGlow,
-            blurRadius: 15,
-            spreadRadius: 1,
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(borderRadius),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
-          child: Container(
-            padding: padding ?? const EdgeInsets.all(20),
-            decoration: BoxDecoration(
-              color: DesignTokens.surface.withOpacity(opacity + 0.4),
-              borderRadius: BorderRadius.circular(borderRadius),
-              border: Border.all(
-                color: effectiveBorder,
-                width: 1.5,
-              ),
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.white.withOpacity(0.05),
-                  Colors.white.withOpacity(0.01),
-                ],
-              ),
+    final effectiveRadius = borderRadius ?? DesignTokens.radiusXL;
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(effectiveRadius),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
+        child: Container(
+          width: width,
+          height: height,
+          padding: padding ?? const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: DesignTokens.surface.withOpacity(opacity),
+            borderRadius: BorderRadius.circular(effectiveRadius),
+            border: Border.all(
+              color: (borderColor ?? Colors.white).withOpacity(0.1),
+              width: 1,
             ),
-            child: child,
           ),
+          child: child,
         ),
       ),
     );
@@ -561,24 +489,29 @@ class _AnimatedListTileState extends State<AnimatedListTile>
       onTapCancel: () => _ctrl.reverse(),
       child: ScaleTransition(
         scale: _scale,
-        child: NeonCard(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          borderColor: accent.withOpacity(0.3),
-          borderRadius: DesignTokens.radiusL,
+        child: Container(
+          decoration: BoxDecoration(
+            color: DesignTokens.surface,
+            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
+            border: Border.all(color: DesignTokens.border.withOpacity(0.5)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: accent.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: accent.withOpacity(0.3)),
-                  boxShadow: [
-                    BoxShadow(
-                        color: accent.withOpacity(0.2), blurRadius: 12),
-                  ],
+                  borderRadius: BorderRadius.circular(DesignTokens.radiusM),
                 ),
-                child: Icon(widget.icon, color: accent, size: 22),
+                child: Icon(widget.icon, color: accent, size: 20),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -587,21 +520,19 @@ class _AnimatedListTileState extends State<AnimatedListTile>
                   children: [
                     Text(
                       widget.title,
-                      style: GoogleFonts.outfit(
-                        fontWeight: FontWeight.w800,
+                      style: GoogleFonts.inter(
+                        fontWeight: FontWeight.w700,
                         fontSize: 16,
                         color: DesignTokens.textPrimary,
-                        letterSpacing: 0.5,
                       ),
                     ),
                     if (widget.subtitle != null) ...[
-                      const SizedBox(height: 4),
+                      const SizedBox(height: 2),
                       Text(
                         widget.subtitle!,
-                        style: GoogleFonts.outfit(
+                        style: GoogleFonts.inter(
                           color: DesignTokens.textSecondary,
                           fontSize: 12,
-                          letterSpacing: 0.2,
                         ),
                       ),
                     ],
@@ -610,7 +541,7 @@ class _AnimatedListTileState extends State<AnimatedListTile>
               ),
               widget.trailing ??
                   Icon(Icons.arrow_forward_ios_rounded,
-                      color: accent.withOpacity(0.4), size: 14),
+                      color: DesignTokens.textMuted, size: 14),
             ],
           ),
         ),
@@ -619,67 +550,7 @@ class _AnimatedListTileState extends State<AnimatedListTile>
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// PremiumCard — animated tap card for home feature grid
-// ─────────────────────────────────────────────────────────────────────────────
-class PremiumCard extends StatefulWidget {
-  final Widget child;
-  final VoidCallback? onTap;
-  final Color? glowColor;
-
-  const PremiumCard({
-    super.key,
-    required this.child,
-    this.onTap,
-    this.glowColor,
-  });
-
-  @override
-  State<PremiumCard> createState() => _PremiumCardState();
-}
-
-class _PremiumCardState extends State<PremiumCard>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _scale;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 120));
-    _scale = Tween<double>(begin: 1.0, end: 0.96).animate(
-        CurvedAnimation(parent: _ctrl, curve: Curves.easeInOut));
-  }
-
-  @override
-  void dispose() {
-    _ctrl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final glow = widget.glowColor ?? DesignTokens.primary;
-    return GestureDetector(
-      onTapDown: (_) => _ctrl.forward(),
-      onTapUp: (_) {
-        _ctrl.reverse();
-        widget.onTap?.call();
-      },
-      onTapCancel: () => _ctrl.reverse(),
-      child: ScaleTransition(
-        scale: _scale,
-        child: GlowContainer(
-          glowColor: glow.withOpacity(0.2),
-          blurRadius: 16,
-          spreadRadius: -4,
-          child: widget.child,
-        ),
-      ),
-    );
-  }
-}
+// PremiumCard removed — now imported from premium_card.dart
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CyberSliverAppBar — sliver app bar with cyberpunk header aesthetic
@@ -732,15 +603,11 @@ class CyberSliverAppBar extends StatelessWidget {
           StretchMode.blurBackground,
         ],
         title: Text(
-          title.toUpperCase(),
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w900,
-            fontSize: 16,
-            letterSpacing: 4,
+          title,
+          style: GoogleFonts.inter(
+            fontWeight: FontWeight.w800,
+            fontSize: 18,
             color: DesignTokens.textPrimary,
-            shadows: [
-              Shadow(color: accent.withOpacity(0.8), blurRadius: 10),
-            ],
           ),
         ),
         centerTitle: true,
@@ -891,4 +758,221 @@ class PageWrapper extends StatelessWidget {
   }
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// CyberFrameCard — Tech-styled frame with custom clipping and neon pulse
+// ─────────────────────────────────────────────────────────────────────────────
+
+class CyberFrameCard extends StatefulWidget {
+  final Widget child;
+  final VoidCallback? onTap;
+  final Color? accentColor;
+
+  const CyberFrameCard({
+    super.key,
+    required this.child,
+    this.onTap,
+    this.accentColor,
+  });
+
+  @override
+  State<CyberFrameCard> createState() => _CyberFrameCardState();
+}
+
+class _CyberFrameCardState extends State<CyberFrameCard> with SingleTickerProviderStateMixin {
+  late AnimationController _pulseCtrl;
+  late Animation<double> _pulseAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulseCtrl = AnimationController(vsync: this, duration: const Duration(seconds: 3))..repeat(reverse: true);
+    _pulseAnim = Tween<double>(begin: 0.3, end: 1.0).animate(CurvedAnimation(parent: _pulseCtrl, curve: Curves.easeInOut));
+  }
+
+  @override
+  void dispose() {
+    _pulseCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = widget.accentColor ?? DesignTokens.primary;
+    return GestureDetector(
+      onTap: widget.onTap,
+      child: AnimatedBuilder(
+        animation: _pulseAnim,
+        builder: (context, child) {
+          return CustomPaint(
+            painter: _CyberFramePainter(
+              color: color.withOpacity(_pulseAnim.value),
+              strokeWidth: 2,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: DesignTokens.surface.withOpacity(0.4),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(20),
+                  bottomRight: Radius.circular(20),
+                ),
+              ),
+              clipBehavior: Clip.antiAlias,
+              child: Stack(
+                children: [
+                   // Tech background details
+                  Positioned(
+                    top: -10,
+                    right: -10,
+                    child: Icon(Icons.settings_input_component_rounded, color: color.withOpacity(0.05), size: 80),
+                  ),
+                  widget.child,
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
+class _CyberFramePainter extends CustomPainter {
+  final Color color;
+  final double strokeWidth;
+
+  _CyberFramePainter({required this.color, required this.strokeWidth});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    final path = Path();
+    
+    // Top Left Corner
+    path.moveTo(0, 40);
+    path.lineTo(0, 20);
+    path.quadraticBezierTo(0, 0, 20, 0);
+    path.lineTo(60, 0);
+
+    // Bottom Right Corner
+    path.moveTo(size.width - 60, size.height);
+    path.lineTo(size.width - 20, size.height);
+    path.quadraticBezierTo(size.width, size.height, size.width, size.height - 20);
+    path.lineTo(size.width, size.height - 40);
+
+    // Small accents
+    canvas.drawPath(path, paint);
+
+    // Glow effect
+    canvas.drawPath(path, Paint()
+      ..color = color.withOpacity(0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth + 2
+      ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4));
+  }
+
+  @override
+  bool shouldRepaint(covariant _CyberFramePainter oldDelegate) => oldDelegate.color != color;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// CyberImageFrame — luxury image frame with reflection and aura
+// ─────────────────────────────────────────────────────────────────────────────
+
+class CyberImageFrame extends StatelessWidget {
+  final String? imagePath;
+  final IconData? fallbackIcon;
+  final Color accentColor;
+  final double height;
+
+  const CyberImageFrame({
+    super.key,
+    this.imagePath,
+    this.fallbackIcon,
+    required this.accentColor,
+    this.height = 280,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          // Multi-layered Aura
+          _buildAura(2),
+          _buildAura(1),
+          
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Main Image
+              Expanded(
+                child: _buildImage(isReflection: false),
+              ),
+              
+              // Mirror Reflection
+              SizedBox(
+                height: height * 0.25,
+                child: ShaderMask(
+                  shaderCallback: (rect) {
+                    return LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.white.withOpacity(0.3), Colors.transparent],
+                    ).createShader(rect);
+                  },
+                  blendMode: BlendMode.dstIn,
+                  child: Transform(
+                    alignment: Alignment.center,
+                    transform: Matrix4.identity()
+                      ..scale(1.0, -1.0)
+                      ..translate(0.0, 10.0),
+                    child: _buildImage(isReflection: true),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAura(int layer) {
+    return Container(
+      width: 140.0 * layer,
+      height: 140.0 * layer,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          colors: [
+            accentColor.withOpacity(0.15 / layer),
+            Colors.transparent,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildImage({required bool isReflection}) {
+    if (imagePath != null) {
+      return Image.asset(
+        imagePath!,
+        fit: BoxFit.contain,
+        opacity: isReflection ? const AlwaysStoppedAnimation(0.3) : null,
+      );
+    }
+    return Icon(
+      fallbackIcon ?? Icons.inventory_2_outlined,
+      size: isReflection ? 40 : 80,
+      color: accentColor.withOpacity(isReflection ? 0.2 : 1),
+    );
+  }
+}
 

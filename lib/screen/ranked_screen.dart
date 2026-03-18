@@ -1,8 +1,8 @@
+import 'package:fff_skin_tools/widgets/premium_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/simple_card.dart';
 import '../common/Ads/ads_card.dart';
 import '../provider/home_provider.dart';
 import '../model/home_item_model.dart';
@@ -20,35 +20,45 @@ class RankedScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.background,
-      body: Consumer<HomeProvider>(
+    return PageWrapper(
+      child: Consumer<HomeProvider>(
         builder: (context, provider, _) {
           final ranks = provider.ranked;
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
-              _buildSliverAppBar(context),
+              _buildAppBar(context),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+                padding: const EdgeInsets.fromLTRB(28, 40, 28, 0),
                 sliver: SliverToBoxAdapter(
                   child: Row(
                     children: [
-                      Container(
-                        width: 4,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          color: DesignTokens.primary,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
+                      const Expanded(
+                        child: GradientHeader(
+                            title: "RANK CLASSIFICATION", fontSize: 13),
                       ),
                       const SizedBox(width: 12),
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: DesignTokens.primary,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                                color: DesignTokens.primary.withOpacity(0.5),
+                                blurRadius: 8)
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 16),
                       Text(
-                        "Rank Classification",
-                        style: GoogleFonts.outfit(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w700,
-                          color: DesignTokens.textPrimary,
+                        "${ranks.length} TIERS DETECTED",
+                        style: GoogleFonts.inter(
+                          fontSize: 9,
+                          fontWeight: FontWeight.w900,
+                          color: DesignTokens.textSecondary,
+                          letterSpacing: 1.5,
                         ),
                       ),
                     ],
@@ -56,30 +66,30 @@ class RankedScreen extends StatelessWidget {
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                sliver: SliverList(
+                padding: const EdgeInsets.all(24),
+                sliver: SliverGrid(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       final rank = ranks[index];
-                      bool showNativeAd = RemoteConfigService.isAdsShow && (index != 0 && index % 4 == 0);
-
-                      return Column(
-                        children: [
-                          _buildRankItem(context, rank, index),
-                          if (showNativeAd) ...[
-                            const SizedBox(height: 24),
-                            const NativeAdsScreen(),
-                            const SizedBox(height: 24),
-                          ] else
-                            const SizedBox(height: 16),
-                        ],
-                      );
+                      // Show Ad every 4th item
+                      if (RemoteConfigService.isAdsShow &&
+                          index != 0 &&
+                          index % 4 == 0) {
+                        return const Center(child: NativeAdsScreen());
+                      }
+                      return _buildUniqueRankCard(context, rank, index);
                     },
                     childCount: ranks.length,
                   ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 1,
+                    mainAxisSpacing: 20,
+                    crossAxisSpacing: 0,
+                    childAspectRatio: 2.8,
+                  ),
                 ),
               ),
-              const SliverToBoxAdapter(child: SizedBox(height: 80)),
+              const SliverToBoxAdapter(child: SizedBox(height: 100)),
             ],
           );
         },
@@ -87,101 +97,108 @@ class RankedScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSliverAppBar(BuildContext context) {
+  Widget _buildAppBar(BuildContext context) {
     return SliverAppBar(
-      expandedHeight: 110,
       pinned: true,
       elevation: 0,
-      backgroundColor: DesignTokens.primary,
+      backgroundColor: Colors.transparent,
       leading: IconButton(
-        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+        icon: const Icon(Icons.arrow_back_ios_new_rounded,
+            color: DesignTokens.textPrimary, size: 20),
         onPressed: () => Navigator.of(context).maybePop(),
       ),
-      flexibleSpace: FlexibleSpaceBar(
-        background: Container(
-          decoration: const BoxDecoration(
-            gradient: DesignTokens.primaryGradient,
-          ),
-          child: Stack(
-            children: [
-              Positioned(
-                right: -10,
-                bottom: -10,
-                child: Icon(
-                  Icons.military_tech_rounded,
-                  size: 100,
-                  color: Colors.white.withOpacity(0.12),
-                ),
-              ),
-            ],
-          ),
-        ),
-        titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
-        title: Text(
-          "Current Rank",
-          style: GoogleFonts.outfit(
-            fontWeight: FontWeight.w700,
-            fontSize: 20,
-            color: Colors.white,
-          ),
+      title: Text(
+        "RANK MATRIX",
+        style: GoogleFonts.inter(
+          fontSize: 16,
+          fontWeight: FontWeight.w900,
+          color: DesignTokens.textPrimary,
+          letterSpacing: 2.5,
         ),
       ),
+      centerTitle: true,
     );
   }
 
-  Widget _buildRankItem(BuildContext context, String rank, int index) {
-    final color = _getRankColor(index);
+  Widget _buildUniqueRankCard(BuildContext context, String rank, int index) {
+    final accentColor = _getRankColor(index);
+    final isRotatedLeft = index % 2 == 0;
 
-    return SimpleCard(
-      onTap: () => _handleSelection(context),
-      padding: const EdgeInsets.all(12),
-      child: Row(
-        children: [
-          Container(
-            width: 54,
-            height: 54,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.08),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(
-              child: Icon(Icons.shield_rounded, color: color, size: 28),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  rank,
-                  style: GoogleFonts.outfit(
-                    fontWeight: FontWeight.w700,
-                    fontSize: 17,
-                    color: DesignTokens.textPrimary,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => _handleSelection(context),
+        child: Transform.rotate(
+          angle: isRotatedLeft ? -0.01 : 0.01,
+          child: CyberFrameCard(
+            accentColor: accentColor,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Row(
+                children: [
+                  // Rank Preview Icon
+                  Container(
+                    width: 60,
+                    height: 60,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: accentColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(isRotatedLeft ? 16 : 4),
+                        bottomRight: Radius.circular(isRotatedLeft ? 4 : 16),
+                        topRight: const Radius.circular(10),
+                        bottomLeft: const Radius.circular(10),
+                      ),
+                      border: Border.all(color: accentColor.withOpacity(0.2)),
+                    ),
+                    child: Icon(Icons.military_tech_rounded,
+                        color: accentColor, size: 32),
                   ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  "Division Proficiency Stage ${index + 1}",
-                  style: GoogleFonts.outfit(
-                    color: DesignTokens.textSecondary,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          rank.toUpperCase(),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.inter(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w900,
+                            color: DesignTokens.textPrimary,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          "DIVISION TIER ${index + 1}",
+                          style: GoogleFonts.inter(
+                            fontSize: 9,
+                            fontWeight: FontWeight.w700,
+                            color: DesignTokens.textSecondary,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                  // Action Icon
+                  Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: accentColor.withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.chevron_right_rounded,
+                        color: accentColor, size: 18),
+                  ),
+                ],
+              ),
             ),
           ),
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: DesignTokens.divider,
-              shape: BoxShape.circle,
-            ),
-            child: Icon(Icons.chevron_right_rounded, color: DesignTokens.textSecondary.withOpacity(0.5), size: 18),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -190,13 +207,14 @@ class RankedScreen extends StatelessWidget {
     await CommonOnTap.openUrl();
     await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
-    Navigator.push(context, MaterialPageRoute(builder: (_) => LevelIdScreen(model: model)));
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => LevelIdScreen(model: model)));
   }
 
   Color _getRankColor(int index) {
     const colors = [
-      Color(0xFF6B7280), // Gray
-      Color(0xFF4F46E5), // Indigo
+      Color(0xFF94A3B8), // Slate
+      Color(0xFF6366F1), // Indigo
       Color(0xFF10B981), // Emerald
       Color(0xFFF59E0B), // Amber
       Color(0xFFEF4444), // Red
@@ -206,6 +224,3 @@ class RankedScreen extends StatelessWidget {
     return colors[index % colors.length];
   }
 }
-
-
-

@@ -1,3 +1,4 @@
+import 'package:fff_skin_tools/widgets/premium_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
@@ -28,14 +29,14 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
 
     _fadeCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1200));
-    _fadeAnim = Tween<double>(begin: 0.0, end: 1.0).animate(
-        CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeIn));
+        vsync: this, duration: const Duration(milliseconds: 1500));
+    _fadeAnim = Tween<double>(begin: 0.0, end: 1.0)
+        .animate(CurvedAnimation(parent: _fadeCtrl, curve: Curves.easeIn));
 
     _scaleCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 1500));
-    _scaleAnim = Tween<double>(begin: 0.9, end: 1.0).animate(
-        CurvedAnimation(parent: _scaleCtrl, curve: Curves.easeOutBack));
+        vsync: this, duration: const Duration(milliseconds: 2000));
+    _scaleAnim = Tween<double>(begin: 0.8, end: 1.0).animate(
+        CurvedAnimation(parent: _scaleCtrl, curve: Curves.easeOutQuart));
 
     _fadeCtrl.forward();
     _scaleCtrl.forward();
@@ -51,7 +52,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _startSplash() async {
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 3));
     if (!mounted || _navigated) return;
     _navigated = true;
     final onboardingDone = await OnboardingProvider.isOnboardingCompleted();
@@ -60,92 +61,138 @@ class _SplashScreenState extends State<SplashScreen>
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(
-        builder: (_) => onboardingDone ? const HomeScreen() : const OnboardingScreen(),
+        builder: (_) =>
+            onboardingDone ? const HomeScreen() : const OnboardingScreen(),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: FadeTransition(
+    return PageWrapper(
+      useSafeArea: false,
+      child: FadeTransition(
         opacity: _fadeAnim,
         child: ScaleTransition(
           scale: _scaleAnim,
           child: Stack(
+            fit: StackFit.expand,
             children: [
+              // Digital Atmosphere
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: DesignTokens.background,
+                    gradient: RadialGradient(
+                      center: Alignment.center,
+                      radius: 0.8,
+                      colors: [
+                        DesignTokens.primary.withOpacity(0.08),
+                        DesignTokens.background,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
               Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    // System Core Indicator
                     Container(
-                      width: 140,
-                      height: 140,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
                       decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(32),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 30,
-                            offset: const Offset(0, 10),
-                          ),
-                        ],
+                        color: DesignTokens.primary.withOpacity(0.1),
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(8),
+                          bottomRight: Radius.circular(8),
+                        ),
+                        border: Border.all(
+                            color: DesignTokens.primary.withOpacity(0.2)),
                       ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(32),
-                        child: Image.asset(
-                          'assets/image/app_logo.png',
-                          fit: BoxFit.cover,
+                      child: Text(
+                        "SYSTEM CORE: INITIALIZING",
+                        style: GoogleFonts.inter(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w900,
+                          color: DesignTokens.primary,
+                          letterSpacing: 2,
                         ),
                       ),
                     ),
-                    const SizedBox(height: 32),
-                    Text(
-                      "Skin Master",
-                      style: GoogleFonts.outfit(
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: DesignTokens.textPrimary,
-                        letterSpacing: 1,
-                      ).copyWith(fontFamily: 'Inter'),
+                    const SizedBox(height: 48),
+                    // High-Fidelity App Logo
+                    CyberImageFrame(
+                      imagePath: 'assets/image/app_logo.png',
+                      accentColor: DesignTokens.primary,
+                      height: 140,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 56),
                     Text(
-                      "Your Ultimate Gaming Companion",
-                      style: GoogleFonts.outfit(
-                        fontSize: 14,
-                        color: DesignTokens.textSecondary,
-                        letterSpacing: 0.5,
+                      "FFF SKIN TOOLS",
+                      style: GoogleFonts.inter(
+                        fontSize: 28,
+                        fontWeight: FontWeight.w900,
+                        color: DesignTokens.textPrimary,
+                        letterSpacing: -0.5,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      "ULTIMATE GAMING ECOSYSTEM",
+                      style: GoogleFonts.inter(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w800,
+                        color: DesignTokens.primary.withOpacity(0.8),
+                        letterSpacing: 3,
                       ),
                     ),
                     const SizedBox(height: 100),
-                    SizedBox(
-                      width: 40,
-                      height: 4,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(2),
-                        child: LinearProgressIndicator(
-                          backgroundColor: DesignTokens.border,
-                          valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primary),
-                        ),
-                      ),
-                    ),
+                    _buildUniqueLoadingIndicator(),
                   ],
                 ),
               ),
               Positioned(
-                bottom: 40,
+                bottom: 60,
                 left: 0,
                 right: 0,
                 child: Center(
-                  child: Text(
-                    "Version 1.0.8",
-                    style: GoogleFonts.outfit(
-                      fontSize: 12,
-                      color: DesignTokens.textSecondary.withOpacity(0.5),
-                    ),
+                  child: Column(
+                    children: [
+                      Text(
+                        "VERSION 1.0.8 / STABLE BUILD",
+                        style: GoogleFonts.inter(
+                          fontSize: 8,
+                          fontWeight: FontWeight.w900,
+                          color: DesignTokens.textSecondary.withOpacity(0.5),
+                          letterSpacing: 2,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            width: 6,
+                            height: 6,
+                            decoration: const BoxDecoration(
+                                color: DesignTokens.secondary,
+                                shape: BoxShape.circle),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            "SECURE UPLINK ESTABLISHED",
+                            style: GoogleFonts.inter(
+                              fontSize: 8,
+                              fontWeight: FontWeight.w800,
+                              color: DesignTokens.secondary.withOpacity(0.5),
+                              letterSpacing: 1.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -155,6 +202,33 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
+
+  Widget _buildUniqueLoadingIndicator() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 220,
+          height: 2,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(1),
+            child: LinearProgressIndicator(
+              backgroundColor: DesignTokens.primary.withOpacity(0.05),
+              valueColor: AlwaysStoppedAnimation<Color>(DesignTokens.primary),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(
+          "SYNCHRONIZING DIGITAL FRAGMENTS...",
+          style: GoogleFonts.inter(
+            fontSize: 7,
+            fontWeight: FontWeight.w900,
+            color: DesignTokens.textSecondary,
+            letterSpacing: 1.5,
+          ),
+        ),
+      ],
+    );
+  }
 }
-
-
