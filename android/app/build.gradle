@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.fffskintool.pro"
+    namespace = "com.ffftool.skinapp"
     compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +24,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.fffskintool.pro"
+        applicationId = "com.ffftool.skinapp"
         minSdk = 24
         targetSdk = 36
         versionCode = flutter.versionCode

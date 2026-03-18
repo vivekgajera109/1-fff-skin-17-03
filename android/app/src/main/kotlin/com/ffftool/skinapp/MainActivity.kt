@@ -1,4 +1,4 @@
-package com.fffskintool.pro
+package com.ffftool.skinapp
 
 import io.flutter.embedding.android.FlutterActivity
 
