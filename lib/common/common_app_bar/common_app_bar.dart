@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:fff_skin_tools/constants/app_colors.dart';
-import 'package:fff_skin_tools/common/common_button/common_button.dart';
 
 class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -48,11 +47,9 @@ class CommonAppBar extends StatelessWidget implements PreferredSizeWidget {
                       Icons.arrow_back_ios_new_rounded,
                       color: AppColors.white,
                     ),
-                    onPressed: () async {
-                      await CommonOnTap.openUrl();
-                      await Future.delayed(const Duration(milliseconds: 400));
+                    onPressed: () {
                       if (context.mounted) {
-                        Navigator.of(context).pop();
+                        Navigator.of(context).maybePop();
                       }
                     },
                   ),

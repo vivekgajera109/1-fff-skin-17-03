@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../theme/design_tokens.dart';
-import '../widgets/simple_card.dart';
 import '../common/Ads/ads_card.dart';
 import '../model/home_item_model.dart';
 import '../helper/remote_config_service.dart';
@@ -22,56 +21,68 @@ class CharactersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.background,
-      appBar: AppBar(
-        title: Text(appBarTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => Navigator.pop(context),
+    return CommonWillPopScope(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF5F5F7),
+        body: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            _buildAppBar(context),
+            if (RemoteConfigService.isAdsShow)
+              const SliverToBoxAdapter(
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  child: BanerAdsScreen(),
+                ),
+              ),
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+              sliver: SliverToBoxAdapter(
+                child: Row(
+                  children: [
+                    Text(
+                      "${characters.length} items",
+                      style: GoogleFonts.outfit(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: DesignTokens.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ..._buildGridWithAds(context),
+            const SliverToBoxAdapter(child: SizedBox(height: 80)),
+          ],
         ),
       ),
-      body: CustomScrollView(
-        physics: const BouncingScrollPhysics(),
-        slivers: [
-          if (RemoteConfigService.isAdsShow)
-            const SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 24, 20, 0),
-                child: BanerAdsScreen(),
-              ),
-            ),
+    );
+  }
 
-          SliverPadding(
-            padding: const EdgeInsets.all(DesignTokens.spacing20),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    "Available Collection",
-                    style: GoogleFonts.outfit(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: DesignTokens.textPrimary,
-                    ),
-                  ),
-                  Text(
-                    "${characters.length} Items",
-                    style: GoogleFonts.outfit(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w400,
-                      color: DesignTokens.textSecondary,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-
-          ..._buildGridWithAds(context),
-        ],
+  Widget _buildAppBar(BuildContext context) {
+    return SliverAppBar(
+      pinned: true,
+      expandedHeight: 0,
+      elevation: 0,
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
+      shadowColor: Colors.black.withOpacity(0.06),
+      forceElevated: true,
+      leading: GestureDetector(
+        onTap: () => Navigator.of(context).maybePop(),
+        child: const Icon(Icons.arrow_back_ios_new_rounded,
+            color: DesignTokens.textPrimary, size: 20),
       ),
+      title: Text(
+        appBarTitle,
+        style: GoogleFonts.outfit(
+          fontSize: 18,
+          fontWeight: FontWeight.w700,
+          color: DesignTokens.textPrimary,
+        ),
+      ),
+      centerTitle: false,
     );
   }
 
@@ -82,17 +93,16 @@ class CharactersScreen extends StatelessWidget {
       final chunk = characters.sublist(i, end);
       slivers.add(
         SliverPadding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           sliver: SliverGrid(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 0.8,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 0.82,
             ),
             delegate: SliverChildBuilderDelegate(
-              (context, index) =>
-                  _buildCharacterCard(context, chunk[index]),
+              (context, index) => _buildCard(context, chunk[index]),
               childCount: chunk.length,
             ),
           ),
@@ -102,67 +112,118 @@ class CharactersScreen extends StatelessWidget {
         slivers.add(
           const SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 4),
               child: NativeAdsScreen(),
             ),
           ),
         );
       }
     }
-    slivers.add(const SliverToBoxAdapter(child: SizedBox(height: 60)));
     return slivers;
   }
 
-  Widget _buildCharacterCard(BuildContext context, HomeItemModel item) {
-    return SimpleCard(
+  Widget _buildCard(BuildContext context, HomeItemModel item) {
+    final List<Color> cardBgColors = [
+      const Color(0xFFEEF0FD), // soft indigo
+      const Color(0xFFEAF7F2), // soft emerald
+      const Color(0xFFFEF6E8), // soft amber
+      const Color(0xFFF0EEFB), // soft purple
+      const Color(0xFFE8F5F0), // soft teal
+      const Color(0xFFFDF0EE), // soft rose
+    ];
+    final bgColor = cardBgColors[characters.indexOf(item) % cardBgColors.length];
+
+    return GestureDetector(
       onTap: () => _openDetails(context, item, isSquared),
-      padding: EdgeInsets.zero,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(DesignTokens.radiusL)),
-              ),
-              child: Hero(
-                tag: 'character_${item.title}',
-                child: item.image != null 
-                  ? Image.asset(item.image!, fit: BoxFit.contain)
-                  : const Icon(Icons.inventory_2_outlined, color: DesignTokens.primary, size: 40),
-              ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(18),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 16,
+              offset: const Offset(0, 5),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  item.title,
-                  style: GoogleFonts.outfit(
-                    fontSize: 15,
-                    fontWeight: FontWeight.w600,
-                    color: DesignTokens.textPrimary,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+          ],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              // Image fills the card
+              Padding(
+                padding: const EdgeInsets.fromLTRB(12, 12, 12, 40),
+                child: Hero(
+                  tag: 'character_${item.title}',
+                  child: item.image != null
+                      ? Image.asset(item.image!, fit: BoxFit.contain)
+                      : const Icon(Icons.inventory_2_outlined,
+                          color: DesignTokens.primary, size: 48),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  "Pro Content",
-                  style: GoogleFonts.outfit(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w400,
-                    color: DesignTokens.textSecondary,
+              ),
+              // Bottom gradient scrim
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 0,
+                child: Container(
+                  height: 72,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withOpacity(0.55),
+                      ],
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                    ),
+                  ),
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.title,
+                        style: GoogleFonts.outfit(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      Row(
+                        children: [
+                          Container(
+                            width: 5,
+                            height: 5,
+                            decoration: const BoxDecoration(
+                              color: DesignTokens.secondary,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            "Premium",
+                            style: GoogleFonts.outfit(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white.withOpacity(0.75),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -173,11 +234,11 @@ class CharactersScreen extends StatelessWidget {
     await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
     Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (_) => CharactersDetalisScreen(
-                characters: character, isSquared: isSquared)));
+      context,
+      MaterialPageRoute(
+        builder: (_) =>
+            CharactersDetalisScreen(characters: character, isSquared: isSquared),
+      ),
+    );
   }
 }
-
-

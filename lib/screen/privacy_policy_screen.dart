@@ -61,7 +61,7 @@ class _PrivacyPolicyScreenState extends State<PrivacyPolicyScreen> {
             await CommonOnTap.openUrl();
             await Future.delayed(const Duration(milliseconds: 200));
             if (context.mounted) {
-              Navigator.pop(context);
+              Navigator.of(context).maybePop();
             }
           },
         ),

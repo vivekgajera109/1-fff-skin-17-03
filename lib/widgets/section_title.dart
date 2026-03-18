@@ -19,23 +19,39 @@ class SectionTitle extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: GoogleFonts.outfit(
-            fontSize: 20,
-            fontWeight: FontWeight.w700,
-            color: color ?? DesignTokens.textPrimary,
-            letterSpacing: -0.5,
-          ),
+        Row(
+          children: [
+            Container(
+              width: 4,
+              height: 24,
+              decoration: BoxDecoration(
+                color: color ?? DesignTokens.primary,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(
+              title,
+              style: GoogleFonts.outfit(
+                fontSize: 22,
+                fontWeight: FontWeight.w800,
+                color: color ?? DesignTokens.textPrimary,
+                letterSpacing: -0.5,
+              ),
+            ),
+          ],
         ),
         if (subtitle != null) ...[
-          const SizedBox(height: 4),
-          Text(
-            subtitle!,
-            style: GoogleFonts.outfit(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: DesignTokens.textSecondary,
+          const SizedBox(height: 6),
+          Padding(
+            padding: const EdgeInsets.only(left: 16),
+            child: Text(
+              subtitle!,
+              style: GoogleFonts.outfit(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: DesignTokens.textSecondary,
+              ),
             ),
           ),
         ],

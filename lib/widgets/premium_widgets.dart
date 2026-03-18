@@ -720,7 +720,7 @@ class CyberSliverAppBar extends StatelessWidget {
                     () async {
                       await CommonOnTap.openUrl();
                       await Future.delayed(const Duration(milliseconds: 400));
-                      if (context.mounted) Navigator.pop(context);
+                      if (context.mounted) Navigator.of(context).maybePop();
                     },
               ),
             )

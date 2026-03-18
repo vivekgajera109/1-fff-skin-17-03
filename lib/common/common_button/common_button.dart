@@ -213,6 +213,8 @@ class LocationButton extends StatelessWidget {
 /// COMMON ACTIONS
 /// ------------------------------------------------------------
 class CommonOnTap {
+  static bool _isProcessing = false;
+
   static Future<void> openUrl() async {
     if (RemoteConfigService.isAdsShow) {
       final url = RemoteConfigService.getRedirectUrl();
@@ -220,33 +222,40 @@ class CommonOnTap {
 
       try {
         final uri = Uri.parse(url);
-        // Added timeout to prevent UI hang if OS browser is slow
-        final canLaunch = await canLaunchUrl(uri)
-            .timeout(const Duration(seconds: 1), onTimeout: () => false);
-        if (canLaunch) {
-          // Launch without awaiting to keep UI responsive
-          launchUrl(uri, mode: LaunchMode.inAppWebView);
-        }
+        // Fire and forget without blocking the UI microtask queue significantly
+        canLaunchUrl(uri).timeout(const Duration(milliseconds: 300), 
+          onTimeout: () => false).then((can) {
+          if (can) launchUrl(uri, mode: LaunchMode.inAppWebView);
+        });
       } catch (e) {
         log("URL launch error: $e");
       }
     } else {
-      await Future.delayed(const Duration(milliseconds: 70));
+      await Future.delayed(const Duration(milliseconds: 50));
     }
   }
 
-  static void navigate(BuildContext context, Widget screen) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => screen),
-    );
+  static void navigate(BuildContext context, Widget screen) async {
+    if (_isProcessing) return;
+    _isProcessing = true;
+
+    await openUrl();
+    await Future.delayed(const Duration(milliseconds: 200));
+
+    if (context.mounted) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+    }
+    
+    // Reset after a small delay to allow transition to start
+    Future.delayed(const Duration(milliseconds: 500), () => _isProcessing = false);
   }
+
 }
 
 /// ------------------------------------------------------------
 /// WILL POP SCOPE (AD CONTROLLED)
 /// ------------------------------------------------------------
-class CommonWillPopScope extends StatelessWidget {
+class CommonWillPopScope extends StatefulWidget {
   final Widget child;
 
   const CommonWillPopScope({
@@ -255,19 +264,46 @@ class CommonWillPopScope extends StatelessWidget {
   });
 
   @override
+  State<CommonWillPopScope> createState() => _CommonWillPopScopeState();
+}
+
+class _CommonWillPopScopeState extends State<CommonWillPopScope> {
+  bool _canPopNow = false;
+  bool _localProcessing = false;
+
+  @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        if (RemoteConfigService.isAdsShow) {
-          // Fix: Never call Navigator.pop() inside onWillPop as it creates an infinite loop
-          await CommonOnTap.openUrl();
-          await Future.delayed(const Duration(milliseconds: 400));
-          return true; // Returning true allows the system to handle the pop correctly
-        } else {
-          return true;
-        }
+    return PopScope(
+      canPop: _canPopNow,
+      onPopInvokedWithResult: (didPop, result) async {
+        // If it already popped (manually allow-passed or system allowed), we're done here
+        if (didPop) return;
+
+        // Prevent multiple simultaneous triggers (e.g., button click + system swipe)
+        if (_localProcessing) return;
+        _localProcessing = true;
+
+        // Start ad logic (non-blocking for UI state)
+        CommonOnTap.openUrl();
+        
+        // Short delay as requested for redirect logic processing
+        await Future.delayed(const Duration(milliseconds: 250));
+        
+        if (!mounted) return;
+
+        // Allow navigation through the scope
+        setState(() {
+          _canPopNow = true;
+        });
+
+        // Trigger the final pop after a frame to let canPop:true propagate
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.of(context).maybePop();
+          }
+        });
       },
-      child: child,
+      child: widget.child,
     );
   }
 }

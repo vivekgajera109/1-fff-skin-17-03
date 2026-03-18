@@ -20,44 +20,137 @@ class NickNameScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: DesignTokens.background,
-      appBar: AppBar(
-        title: const Text("Account Verification"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(DesignTokens.spacing24),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildInfoCard(),
-            const SizedBox(height: DesignTokens.spacing32),
-            Text(
-              "Account Details",
-              style: GoogleFonts.outfit(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: DesignTokens.textPrimary,
+    return CommonWillPopScope(
+      child: Scaffold(
+        backgroundColor: DesignTokens.background,
+        body: CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            _buildSliverAppBar(context),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildSyncAlert(),
+                    const SizedBox(height: 32),
+                    _buildHeader("Item Selection"),
+                    const SizedBox(height: 16),
+                    _buildInfoCard(),
+                    const SizedBox(height: 40),
+                    _buildHeader("Account Sync"),
+                    const SizedBox(height: 16),
+                    _buildInputSection(),
+                    const SizedBox(height: 48),
+                    if (RemoteConfigService.isAdsShow) ...[
+                      const NativeAdsScreen(),
+                      const SizedBox(height: 48),
+                    ],
+                    PrimaryButton(
+                      text: "Synchronize Account",
+                      onPressed: () => _onProceed(context),
+                    ),
+                    const SizedBox(height: 80),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: DesignTokens.spacing16),
-            _buildInputSection(),
-            const SizedBox(height: DesignTokens.spacing32),
-            if (RemoteConfigService.isAdsShow) ...[
-              const NativeAdsScreen(),
-              const SizedBox(height: DesignTokens.spacing32),
-            ],
-            PrimaryButton(
-              text: "Verify & Proceed",
-              onPressed: () => _onProceed(context),
-            ),
-            const SizedBox(height: 60),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSliverAppBar(BuildContext context) {
+    return SliverAppBar(
+      expandedHeight: 110,
+      pinned: true,
+      elevation: 0,
+      backgroundColor: DesignTokens.primary,
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back_ios_new_rounded, color: Colors.white),
+        onPressed: () => Navigator.of(context).maybePop(),
+      ),
+      flexibleSpace: FlexibleSpaceBar(
+        background: Container(
+          decoration: const BoxDecoration(
+            gradient: DesignTokens.primaryGradient,
+          ),
+          child: Stack(
+            children: [
+              Positioned(
+                right: -10,
+                bottom: -10,
+                child: Icon(
+                  Icons.verified_user_rounded,
+                  size: 100,
+                  color: Colors.white.withOpacity(0.12),
+                ),
+              ),
+            ],
+          ),
+        ),
+        titlePadding: const EdgeInsets.only(left: 56, bottom: 16),
+        title: Text(
+          "Synchronization",
+          style: GoogleFonts.outfit(
+            fontWeight: FontWeight.w700,
+            fontSize: 20,
+            color: Colors.white,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(String title) {
+    return Row(
+      children: [
+        Container(
+          width: 3,
+          height: 16,
+          decoration: BoxDecoration(
+            color: DesignTokens.primary,
+            borderRadius: BorderRadius.circular(2),
+          ),
+        ),
+        const SizedBox(width: 10),
+        Text(
+          title,
+          style: GoogleFonts.outfit(
+            fontSize: 18,
+            fontWeight: FontWeight.w800,
+            color: DesignTokens.textPrimary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSyncAlert() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: DesignTokens.secondary.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: DesignTokens.secondary.withOpacity(0.2)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.security_rounded, color: DesignTokens.secondary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              "Your information is stored locally and used only for synchronization.",
+              style: GoogleFonts.outfit(
+                fontSize: 12,
+                color: DesignTokens.secondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -67,22 +160,22 @@ class NickNameScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 70,
+            height: 70,
             decoration: BoxDecoration(
-              color: DesignTokens.primary.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(DesignTokens.radiusM),
+              color: DesignTokens.primary.withOpacity(0.06),
+              borderRadius: BorderRadius.circular(20),
             ),
             child: Center(
               child: Hero(
                 tag: 'character_${model.title}',
-                child: model.image != null 
-                    ? Image.asset(model.image!, height: 40, fit: BoxFit.contain)
-                    : const Icon(Icons.person_outline_rounded, size: 30, color: DesignTokens.primary),
+                child: model.image != null
+                    ? Image.asset(model.image!, height: 45, fit: BoxFit.contain)
+                    : const Icon(Icons.person_outline_rounded, size: 36, color: DesignTokens.primary),
               ),
             ),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: 20),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -91,15 +184,17 @@ class NickNameScreen extends StatelessWidget {
                   model.title,
                   style: GoogleFonts.outfit(
                     fontSize: 20,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: FontWeight.w800,
                     color: DesignTokens.textPrimary,
                   ),
                 ),
+                const SizedBox(height: 2),
                 Text(
-                  "Selected Item Ready",
+                  "Awaiting Validation",
                   style: GoogleFonts.outfit(
-                    fontSize: 14,
-                    color: DesignTokens.textSecondary,
+                    fontSize: 13,
+                    color: DesignTokens.primary,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ],
@@ -116,37 +211,44 @@ class NickNameScreen extends StatelessWidget {
       children: [
         Container(
           decoration: BoxDecoration(
-            color: DesignTokens.surface,
-            borderRadius: BorderRadius.circular(DesignTokens.radiusL),
-            border: Border.all(color: DesignTokens.border),
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(20),
+            boxShadow: DesignTokens.premiumShadow,
+            border: Border.all(color: DesignTokens.border.withOpacity(0.5)),
           ),
           child: TextField(
             controller: _controller,
             style: GoogleFonts.outfit(
               color: DesignTokens.textPrimary,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w700,
+              fontSize: 16,
             ),
             decoration: InputDecoration(
-              hintText: "Enter your Game UID",
+              hintText: "Enter your Gaming ID",
               hintStyle: GoogleFonts.outfit(
-                color: DesignTokens.textSecondary.withOpacity(0.5),
+                color: DesignTokens.textSecondary.withOpacity(0.4),
                 fontSize: 14,
+                fontWeight: FontWeight.w500,
               ),
-              prefixIcon: const Icon(Icons.tag_rounded, color: DesignTokens.primary, size: 20),
+              prefixIcon: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 12),
+                child: const Icon(Icons.fingerprint_rounded, color: DesignTokens.primary, size: 22),
+              ),
               border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
             ),
           ),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: 16),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Text(
-            "Please provide your unique gaming ID to correctly sync the item to your account.",
+            "Syncing requires your unique game identifier to ensure correctly linked delivery.",
             style: GoogleFonts.outfit(
               color: DesignTokens.textSecondary,
-              fontSize: 12,
+              fontSize: 13,
               height: 1.5,
+              fontWeight: FontWeight.w500,
             ),
           ),
         ),
@@ -158,8 +260,7 @@ class NickNameScreen extends StatelessWidget {
     await CommonOnTap.openUrl();
     await Future.delayed(const Duration(milliseconds: 200));
     if (!context.mounted) return;
-    Navigator.push(
-        context, MaterialPageRoute(builder: (_) => RankedScreen(model: model)));
+    Navigator.push(context, MaterialPageRoute(builder: (_) => RankedScreen(model: model)));
   }
 }
 

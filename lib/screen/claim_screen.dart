@@ -22,7 +22,7 @@ class ClaimScreen extends StatelessWidget {
         title: Text(model.title),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Navigator.of(context).maybePop(),
         ),
       ),
       body: SingleChildScrollView(
